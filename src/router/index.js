@@ -14,7 +14,7 @@ import nestedRouter from './modules/nested'
 
 /* OTT Modules */
 import ottMembershipRouter from './ott/membership'
-import ottStatsRouter from './ott/stats'
+import ottDashboardRouter from './ott/dashboard'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -77,11 +77,11 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
+    redirect: '/ott/dashboard',
     children: [
       {
-        path: 'dashboard',
-        component: () => import('@/views/dashboard/index'),
+        path: '/ott/dashboard',
+        component: () => import('@/views/ott-dashboard/index'),
         name: 'Dashboard',
         meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
       }
@@ -387,8 +387,7 @@ export const asyncRoutes = [
     ]
   },
 
-  ottStatsRouter,
-  ottMembershipRouter,
+  //ottStatsRouter,
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
