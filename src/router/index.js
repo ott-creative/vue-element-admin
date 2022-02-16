@@ -14,7 +14,7 @@ import nestedRouter from './modules/nested'
 
 /* OTT Modules */
 import ottMembershipRouter from './ott/membership'
-import ottDashboardRouter from './ott/dashboard'
+import ottStatsRouter from './ott/stats'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -387,6 +387,7 @@ export const asyncRoutes = [
     ]
   },
 
+  ottStatsRouter,
   ottMembershipRouter,
 
   // 404 page must be placed at the end !!!

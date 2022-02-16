@@ -5,14 +5,23 @@ const user = require('./user')
 const role = require('./role')
 const article = require('./article')
 const search = require('./remote-search')
+// OTT mocks
 const ott_membership = require('./ott-membership')
+const ott_stats_transaction = require('./ott-stats-transaction')
+const ott_stats_transaction_detail = require('./ott-stats-transaction-detail')
+const ott_stats_clearing = require('./ott-stats-clearing')
+const ott_stats_membership_consume = require('./ott-stats-membership-consume')
 
 const mocks = [
   ...user,
   ...role,
   ...article,
   ...search,
-  ...ott_membership
+  ...ott_membership,
+  ...ott_stats_transaction,
+  ...ott_stats_transaction_detail,
+  ...ott_stats_clearing,
+  ...ott_stats_membership_consume
 ]
 
 // for front mock
