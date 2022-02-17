@@ -16,6 +16,8 @@ const ott_transaction_transaction = require('./ott-transaction-transaction')
 const ott_transaction_clearing = require('./ott-transaction-clearing')
 const ott_transaction_refund = require('./ott-transaction-refund')
 const ott_transaction_settlement = require('./ott-transaction-settlement')
+const ott_merchant_merchant = require('./ott-merchant-merchant')
+const ott_merchant_setting = require('./ott-merchant-setting')
 
 const mocks = [
   ...user,
@@ -31,7 +33,9 @@ const mocks = [
   ...ott_transaction_transaction,
   ...ott_transaction_clearing,
   ...ott_transaction_refund,
-  ...ott_transaction_settlement
+  ...ott_transaction_settlement,
+  ...ott_merchant_merchant,
+  ...ott_merchant_setting
 ]
 
 // for front mock

@@ -8,15 +8,15 @@ const ottFundsRouter = {
     redirect: 'noRedirect',
     name: 'Funds Management',
     meta: {
-        title: 'Funds Management',
+        title: 'Funds',
         icon: 'chart'
     },
     children: [
         {
             path: 'index',
             component: () => import('@/views/ott-funds/index'),
-            name: 'Funds Management',
-            meta: { title: 'Funds Management', icon: 'chart' }
+            name: 'Funds',
+            meta: { title: 'Funds', icon: 'chart' }
         }
     ]
 }

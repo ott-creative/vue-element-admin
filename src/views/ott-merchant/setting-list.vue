@@ -77,94 +77,60 @@
       @sort-change="sortChange"
     >
       <el-table-column
-        label="User ID"
-        prop="id"
+        label="Merchant ID"
+        prop="merchant_id"
         sortable="custom"
         align="center"
         width="80"
-        :class-name="getSortClass('id')"
+        :class-name="getSortClass('merchant_id')"
       >
         <template slot-scope="{ row }">
-          <span>{{ row.id }}</span>
+          <span>{{ row.merchant_id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Name" width="100" align="center">
+      <el-table-column label="Merchant Name" align="center">
         <template slot-scope="{ row }">
-          {{ row.name }}
+          {{ row.merchant_name }}
         </template>
       </el-table-column>
-      <el-table-column label="Card #" width="120px" align="center">
+      <el-table-column label="Merchant Type" align="center">
         <template slot-scope="{ row }">
-          <span>{{ row.account }}</span>
+          {{ row.merchant_type }}
         </template>
       </el-table-column>
-      <el-table-column label="Type" width="100" align="center">
+      <el-table-column label="Clearing Rule" align="center">
         <template slot-scope="{ row }">
-          {{ row.member_type }}
+          <span>{{ row.clearing_rule }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="DID" width="150px" align="center">
+      <el-table-column label="Clearing Fee" align="center">
         <template slot-scope="{ row }">
-          <span>{{ row.did }}</span>
+          <span>{{ row.clearing_fee | filterClearingFee }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Card Balance" width="120px" align="center">
+      <el-table-column label="Clearing Percentage" align="center">
         <template slot-scope="{ row }">
-          <span>{{ row.balance }}</span>
+          <span>{{ row.clearing_percentage | filterClearingPercentage }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Points Balance" width="120px" align="center">
+      <el-table-column label="Minimum Settlement Amount" align="center">
         <template slot-scope="{ row }">
-          <span>{{ row.points }}</span>
+          <span>${{ row.minimum_settlement_amount }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Active" class-name="status-col" width="100">
+      <el-table-column label="Settlement Period" align="center">
         <template slot-scope="{ row }">
-          <el-tag :type="row.status | activeFilter">
-            {{ row.status }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="Membership Start Date"
-        width="100px"
-        align="center"
-      >
-        <template slot-scope="{ row }">
-          <span>{{ row.membership_start | parseTime("{y}-{m}-{d}") }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="Membership Exp. Date"
-        width="100px"
-        align="center"
-      >
-        <template slot-scope="{ row }">
-          <span>{{ row.membership_end | parseTime("{y}-{m}-{d}") }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Salesman" width="100px" align="center">
-        <template slot-scope="{ row }">
-          <span>{{ row.salesman }}</span>
+          {{ row.settlement_period }}
         </template>
       </el-table-column>
       <el-table-column
         label="Actions"
         align="center"
-        width="200px"
         class-name="small-padding fixed-width"
       >
         <template slot-scope="{ row }">
-          <el-button
-            type="primary"
-            :disabled="1"
-            size="mini"
-            @click="handleUpdate(row)"
-          >
+          <el-button type="primary" size="mini" @click="handleUpdate(row)">
             Edit
-          </el-button>
-          <el-button type="danger" size="mini" @click="handleUpdate(row)">
-            KYC
           </el-button>
         </template>
       </el-table-column>
@@ -274,7 +240,7 @@
 </template>
 
 <script>
-import { fetchList, createMember, updateMember } from "@/api/ott-membership";
+import { fetchList } from "@/api/ott-merchant-setting";
 import waves from "@/directive/waves"; // waves directive
 import { parseTime } from "@/utils";
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
@@ -291,7 +257,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 }, {});
 
 export default {
-  name: "MembershipTable",
+  name: "OttMerchantSettingList",
   components: { Pagination },
   directives: { waves },
   filters: {
@@ -304,6 +270,12 @@ export default {
     },
     typeFilter(type) {
       return calendarTypeKeyValue[type];
+    },
+    filterClearingFee(value) {
+      return value == -1 ? "-" : `\$${value}`;
+    },
+    filterClearingPercentage(value) {
+      return value == -1 ? "-" : `${value}%`;
     },
   },
   data() {
@@ -410,6 +382,7 @@ export default {
         type: "",
       };
     },
+    handleView(row) {},
     handleCreate() {
       this.resetTemp();
       this.dialogStatus = "create";

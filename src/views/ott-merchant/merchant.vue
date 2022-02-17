@@ -77,7 +77,7 @@
       @sort-change="sortChange"
     >
       <el-table-column
-        label="User ID"
+        label="Merchant ID"
         prop="id"
         sortable="custom"
         align="center"
@@ -88,83 +88,53 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Name" width="100" align="center">
+      <el-table-column label="Merchant Name" align="center">
         <template slot-scope="{ row }">
           {{ row.name }}
         </template>
       </el-table-column>
-      <el-table-column label="Card #" width="120px" align="center">
+      <el-table-column label="Merchant Type" align="center">
         <template slot-scope="{ row }">
-          <span>{{ row.account }}</span>
+          {{ row.merchant_type }}
         </template>
       </el-table-column>
-      <el-table-column label="Type" width="100" align="center">
+      <el-table-column label="Business License Name" align="center">
         <template slot-scope="{ row }">
-          {{ row.member_type }}
+          <span>{{ row.business_license_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="DID" width="150px" align="center">
+      <el-table-column label="Business License #" align="center">
         <template slot-scope="{ row }">
-          <span>{{ row.did }}</span>
+          <span>{{ row.business_license_no }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Card Balance" width="120px" align="center">
+      <el-table-column label="PLegal Person DID" align="center">
         <template slot-scope="{ row }">
-          <span>{{ row.balance }}</span>
+          <span>{{ row.legal_person_did }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Points Balance" width="120px" align="center">
+      <el-table-column label="Merchant Status" align="center">
         <template slot-scope="{ row }">
-          <span>{{ row.points }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Active" class-name="status-col" width="100">
-        <template slot-scope="{ row }">
-          <el-tag :type="row.status | activeFilter">
+          <el-tag :type="row.status">
             {{ row.status }}
           </el-tag>
         </template>
       </el-table-column>
       <el-table-column
-        label="Membership Start Date"
-        width="100px"
-        align="center"
-      >
-        <template slot-scope="{ row }">
-          <span>{{ row.membership_start | parseTime("{y}-{m}-{d}") }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="Membership Exp. Date"
-        width="100px"
-        align="center"
-      >
-        <template slot-scope="{ row }">
-          <span>{{ row.membership_end | parseTime("{y}-{m}-{d}") }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Salesman" width="100px" align="center">
-        <template slot-scope="{ row }">
-          <span>{{ row.salesman }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
         label="Actions"
         align="center"
-        width="200px"
+        width="250px"
         class-name="small-padding fixed-width"
       >
         <template slot-scope="{ row }">
-          <el-button
-            type="primary"
-            :disabled="1"
-            size="mini"
-            @click="handleUpdate(row)"
-          >
+          <el-button type="primary" size="mini" @click="handleView(row)">
+            View
+          </el-button>
+          <el-button type="primary" size="mini" @click="handleUpdate(row)">
             Edit
           </el-button>
-          <el-button type="danger" size="mini" @click="handleUpdate(row)">
-            KYC
+          <el-button type="danger" size="mini" @click="handleDelete(row)">
+            Delete
           </el-button>
         </template>
       </el-table-column>
@@ -274,7 +244,7 @@
 </template>
 
 <script>
-import { fetchList, createMember, updateMember } from "@/api/ott-membership";
+import { fetchList } from "@/api/ott-merchant-merchant";
 import waves from "@/directive/waves"; // waves directive
 import { parseTime } from "@/utils";
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
@@ -410,6 +380,7 @@ export default {
         type: "",
       };
     },
+    handleView(row) {},
     handleCreate() {
       this.resetTemp();
       this.dialogStatus = "create";
