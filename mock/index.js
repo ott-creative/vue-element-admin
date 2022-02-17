@@ -11,6 +11,11 @@ const ott_stats_transaction = require('./ott-stats-transaction')
 const ott_stats_transaction_detail = require('./ott-stats-transaction-detail')
 const ott_stats_clearing = require('./ott-stats-clearing')
 const ott_stats_membership_consume = require('./ott-stats-membership-consume')
+const ott_funds = require('./ott-funds')
+const ott_transaction_transaction = require('./ott-transaction-transaction')
+const ott_transaction_clearing = require('./ott-transaction-clearing')
+const ott_transaction_refund = require('./ott-transaction-refund')
+const ott_transaction_settlement = require('./ott-transaction-settlement')
 
 const mocks = [
   ...user,
@@ -21,7 +26,12 @@ const mocks = [
   ...ott_stats_transaction,
   ...ott_stats_transaction_detail,
   ...ott_stats_clearing,
-  ...ott_stats_membership_consume
+  ...ott_stats_membership_consume,
+  ...ott_funds,
+  ...ott_transaction_transaction,
+  ...ott_transaction_clearing,
+  ...ott_transaction_refund,
+  ...ott_transaction_settlement
 ]
 
 // for front mock

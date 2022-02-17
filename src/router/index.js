@@ -15,6 +15,8 @@ import nestedRouter from './modules/nested'
 /* OTT Modules */
 import ottMembershipRouter from './ott/membership'
 import ottStatsRouter from './ott/stats'
+import ottFundsRouter from './ott/funds'
+import ottTransactionRouter from './ott/transaction'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -387,6 +389,8 @@ export const asyncRoutes = [
     ]
   },
 
+  ottTransactionRouter,
+  ottFundsRouter,
   ottStatsRouter,
   ottMembershipRouter,
 
