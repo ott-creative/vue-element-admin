@@ -12,6 +12,24 @@ for (let i = 0; i < count; i++) {
         business_license_no: '@integer(100000000, 999999999)',
         legal_person_did: 'did:key:0djd2838484jcuieru4823nd83',
         'status|1': ['Valid', 'Invalid'],
+        qr_pay: "paycode",
+        address: "",
+        email: "",
+        business_license_type: "",
+        business_license_expired: "",
+
+        // Account
+        account_bank_name: "",
+        account_branch_no: "",
+        account_branch_address: "",
+        account_bank_no: "",
+        account_routing_no: "",
+        account_swift_code: "",
+        account_bank_holder_name: "",
+        account_bank_holder_address: "",
+
+        // platform service setting:
+        platform_service_fee_percentage: "2%",
     }))
 }
 
@@ -20,10 +38,11 @@ module.exports = [
         url: '/ott/merchant/merchant/list',
         type: 'get',
         response: config => {
-            const { type, name, page = 1, limit = 20, sort } = config.query
+            const { merchant_type, name, page = 1, limit = 20, sort } = config.query
 
             let mockList = List.filter(item => {
-                if (type && item.type !== type) return false
+                if (merchant_type && item.merchant_type !== merchant_type) return false
+                if (name && item.name !== name) return false
                 return true
             })
 
@@ -39,6 +58,51 @@ module.exports = [
                     total: mockList.length,
                     items: pageList
                 }
+            }
+        }
+    },
+    {
+        url: '/ott/merchant/merchant/detail',
+        type: 'get',
+        response: config => {
+            const { id } = config.query
+
+            let result = undefined;
+            for (const item of List) {
+                console.log(item);
+                if (item.id == id) {
+                    return {
+                        code: 20000,
+                        data: item
+                    }
+                }
+            }
+
+            console.log("result:", result);
+
+            return {
+                code: 30000,
+            }
+
+        }
+    },
+    {
+        url: '/ott/merchant/merchant/create',
+        type: 'post',
+        response: _ => {
+            return {
+                code: 20000,
+                data: 'success'
+            }
+        }
+    },
+    {
+        url: '/ott/merchant/merchant/update',
+        type: 'post',
+        response: _ => {
+            return {
+                code: 20000,
+                data: 'success'
             }
         }
     },

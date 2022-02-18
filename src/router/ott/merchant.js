@@ -19,6 +19,11 @@ const ottMerchantRouter = {
             meta: { title: 'Merchant List', icon: 'tab' }
         },
         {
+            path: 'detail/:id',
+            component: () => import('@/views/ott-merchant/detail'),
+            hidden: true
+        },
+        {
             path: 'setting',
             component: () => import('@/views/ott-merchant/setting-list'),
             name: 'Setting',

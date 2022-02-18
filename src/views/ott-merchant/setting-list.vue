@@ -48,7 +48,6 @@
         class="filter-item"
         style="margin-left: 10px"
         type="primary"
-        disabled="disabled"
         icon="el-icon-edit"
         @click="handleCreate"
       >
@@ -153,14 +152,14 @@
         label-width="70px"
         style="width: 400px; margin-left: 50px"
       >
-        <el-form-item label="Type" prop="type">
+        <el-form-item label="Merchant Name" prop="merchant_name">
           <el-select
-            v-model="temp.type"
+            v-model="temp.merchant_name"
             class="filter-item"
             placeholder="Please select"
           >
             <el-option
-              v-for="item in calendarTypeOptions"
+              v-for="item in newMerchantList"
               :key="item.key"
               :label="item.display_name"
               :value="item.key"
@@ -289,9 +288,8 @@ export default {
         limit: 20,
         name: undefined,
         type: undefined,
-        sort: "+id",
+        sort: "+merchant_id",
       },
-      importanceOptions: [1, 2, 3],
       calendarTypeOptions,
       sortOptions: [
         { label: "ID Ascending", key: "+id" },
@@ -299,13 +297,12 @@ export default {
       ],
       statusOptions: ["No", "Yes"],
       temp: {
-        id: undefined,
-        importance: 1,
-        remark: "",
-        timestamp: new Date(),
-        title: "",
-        type: "",
-        status: "published",
+        merchant_name: "",
+        clearing_rule: "Fixed Amount",
+        clearing_fee: 10,
+        clearing_percentage: 10,
+        minimum_settlement_amount: 10,
+        settlement_period: 1,
       },
       dialogFormVisible: false,
       dialogStatus: "",
@@ -314,7 +311,6 @@ export default {
         create: "Create",
       },
       dialogPvVisible: false,
-      pvData: [],
       rules: {
         type: [
           { required: true, message: "type is required", trigger: "change" },
@@ -365,9 +361,9 @@ export default {
     },
     sortByID(order) {
       if (order === "ascending") {
-        this.listQuery.sort = "+id";
+        this.listQuery.sort = "+merchant_id";
       } else {
-        this.listQuery.sort = "-id";
+        this.listQuery.sort = "-merchant_id";
       }
       this.handleFilter();
     },

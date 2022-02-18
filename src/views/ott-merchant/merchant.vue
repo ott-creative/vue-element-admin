@@ -9,17 +9,17 @@
         @keyup.enter.native="handleFilter"
       />
       <el-select
-        v-model="listQuery.type"
-        placeholder="Type"
+        v-model="listQuery.merchant_type"
+        placeholder="Merchant Type"
         clearable
         class="filter-item"
         style="width: 130px"
       >
         <el-option
-          v-for="item in calendarTypeOptions"
-          :key="item.key"
-          :label="item.display_name"
-          :value="item.key"
+          v-for="item in merchantTypeList"
+          :key="item"
+          :label="item"
+          :value="item"
         />
       </el-select>
       <el-select
@@ -48,7 +48,6 @@
         class="filter-item"
         style="margin-left: 10px"
         type="primary"
-        disabled="disabled"
         icon="el-icon-edit"
         @click="handleCreate"
       >
@@ -59,6 +58,7 @@
         :loading="downloadLoading"
         class="filter-item"
         type="primary"
+        disabled="disabled"
         icon="el-icon-download"
         @click="handleDownload"
       >
@@ -81,7 +81,6 @@
         prop="id"
         sortable="custom"
         align="center"
-        width="80"
         :class-name="getSortClass('id')"
       >
         <template slot-scope="{ row }">
@@ -95,10 +94,16 @@
       </el-table-column>
       <el-table-column label="Merchant Type" align="center">
         <template slot-scope="{ row }">
-          {{ row.merchant_type }}
+          <el-tag>
+            {{ row.merchant_type }}
+          </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="Business License Name" align="center">
+      <el-table-column
+        label="Business License Name"
+        align="center"
+        width="180px"
+      >
         <template slot-scope="{ row }">
           <span>{{ row.business_license_name }}</span>
         </template>
@@ -108,16 +113,23 @@
           <span>{{ row.business_license_no }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="PLegal Person DID" align="center">
+      <!--<el-table-column label="Legal Person DID" align="center">
         <template slot-scope="{ row }">
           <span>{{ row.legal_person_did }}</span>
         </template>
-      </el-table-column>
+      </el-table-column>-->
       <el-table-column label="Merchant Status" align="center">
         <template slot-scope="{ row }">
-          <el-tag :type="row.status">
-            {{ row.status }}
+          <el-tag :type="row.status | statusFilter">
+            <span>{{ row.status }}</span>
           </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="QR" align="center">
+        <template slot-scope="{ row }">
+          <div class="qr-wrapper" v-on:click="handleQrClick(row)">
+            <QrCode :width="30" :height="30" :content="row.qr_pay" />
+          </div>
         </template>
       </el-table-column>
       <el-table-column
@@ -128,13 +140,11 @@
       >
         <template slot-scope="{ row }">
           <el-button type="primary" size="mini" @click="handleView(row)">
-            View
+            Detail
           </el-button>
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+
+          <el-button type="warning" size="mini" @click="handleUpdate(row)">
             Edit
-          </el-button>
-          <el-button type="danger" size="mini" @click="handleDelete(row)">
-            Delete
           </el-button>
         </template>
       </el-table-column>
@@ -148,68 +158,157 @@
       @pagination="getList"
     />
 
+    <el-dialog
+      :visible.sync="qrDialogVisible"
+      title="Merchant Payment QrCode"
+      :model="currentQrData"
+      width="300px"
+      :key="new Date().getTime()"
+    >
+      <div class="el-dialog-div">
+        <QrCode :width="250" :height="250" :content="currentQrData" />
+      </div>
+    </el-dialog>
+
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
         ref="dataForm"
         :rules="rules"
         :model="temp"
         label-position="left"
-        label-width="70px"
-        style="width: 400px; margin-left: 50px"
+        label-width="200px"
+        style="width: 450px; margin-left: 50px"
       >
-        <el-form-item label="Type" prop="type">
+        <div class="form-info-first">Merchant Basic Information</div>
+        <el-divider direction="horizontal" content-position="center" />
+        <el-form-item label="Merchant Name" prop="name">
+          <el-input v-model="temp.name" />
+        </el-form-item>
+        <el-form-item label="Salesman">
           <el-select
-            v-model="temp.type"
+            v-model="temp.salesman"
             class="filter-item"
             placeholder="Please select"
           >
             <el-option
-              v-for="item in calendarTypeOptions"
-              :key="item.key"
-              :label="item.display_name"
-              :value="item.key"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Date" prop="timestamp">
-          <el-date-picker
-            v-model="temp.timestamp"
-            type="datetime"
-            placeholder="Please pick a date"
-          />
-        </el-form-item>
-        <el-form-item label="Title" prop="title">
-          <el-input v-model="temp.title" />
-        </el-form-item>
-        <el-form-item label="Status">
-          <el-select
-            v-model="temp.status"
-            class="filter-item"
-            placeholder="Please select"
-          >
-            <el-option
-              v-for="item in statusOptions"
+              v-for="item in salesmanList"
               :key="item"
               :label="item"
               :value="item"
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="Imp">
-          <el-rate
-            v-model="temp.importance"
-            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-            :max="3"
-            style="margin-top: 8px"
+        <el-form-item label="Merchant Type" prop="merchant_type">
+          <el-select
+            v-model="temp.merchant_type"
+            class="filter-item"
+            placeholder="Please select"
+          >
+            <el-option
+              v-for="item in merchantTypeList"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Legal Person DID" prop="legal_person_did">
+          <el-input v-model="temp.legal_person_did" />
+        </el-form-item>
+        <el-form-item label="Address" prop="address">
+          <el-input v-model="temp.address" />
+        </el-form-item>
+        <el-form-item label="Email" prop="email">
+          <el-input v-model="temp.email" />
+        </el-form-item>
+        <el-form-item
+          label="Business License Type"
+          prop="business_license_type"
+        >
+          <el-select
+            v-model="temp.business_license_type"
+            class="filter-item"
+            placeholder="Please select"
+          >
+            <el-option
+              v-for="item in businessLicenseTypeList"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Business License #" prop="business_license_no">
+          <el-input v-model="temp.business_license_no" />
+        </el-form-item>
+        <el-form-item
+          label="Business License Name"
+          prop="business_license_name"
+        >
+          <el-input v-model="temp.business_license_name" />
+        </el-form-item>
+        <el-form-item
+          label="Business License Exp. Date"
+          prop="business_license_expired"
+        >
+          <el-date-picker
+            v-model="temp.business_license_expired"
+            type="datetime"
+            placeholder="Please pick a date"
           />
         </el-form-item>
-        <el-form-item label="Remark">
-          <el-input
-            v-model="temp.remark"
-            :autosize="{ minRows: 2, maxRows: 4 }"
-            type="textarea"
-            placeholder="Please input"
-          />
+
+        <div class="form-info">Merchant Bank Account Setting</div>
+        <el-divider direction="horizontal" content-position="center" />
+        <el-form-item label="Bank Name">
+          <el-select
+            v-model="temp.account_bank_name"
+            class="filter-item"
+            placeholder="Please select"
+          >
+            <el-option
+              v-for="item in bankNameList"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Branch Number" prop="account_branch_no">
+          <el-input v-model="temp.account_branch_no" />
+        </el-form-item>
+        <el-form-item label="Branch Full Address" prop="account_branch_address">
+          <el-input v-model="temp.account_branch_address" />
+        </el-form-item>
+        <el-form-item label="Bank Account Number" prop="account_bank_no">
+          <el-input v-model="temp.account_bank_no" />
+        </el-form-item>
+        <el-form-item label="Routing Number" prop="account_routing_no">
+          <el-input v-model="temp.account_routing_no" />
+        </el-form-item>
+        <el-form-item label="Swift Code" prop="account_swift_code">
+          <el-input v-model="temp.account_swift_code" />
+        </el-form-item>
+        <el-form-item
+          label="Account Holder Name"
+          prop="account_bank_holder_name"
+        >
+          <el-input v-model="temp.account_bank_holder_name" />
+        </el-form-item>
+        <el-form-item
+          label="Account Holder Address"
+          prop="account_bank_holder_address"
+        >
+          <el-input v-model="temp.account_bank_holder_address" />
+        </el-form-item>
+
+        <div class="form-info">Service Fee Setting</div>
+        <el-divider direction="horizontal" content-position="center" />
+        <el-form-item
+          label="Platform Service Fee"
+          prop="platform_service_fee_percentage"
+        >
+          <el-input readonly placeholder="2%" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -222,58 +321,114 @@
         </el-button>
       </div>
     </el-dialog>
-
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table
-        :data="pvData"
-        border
-        fit
-        highlight-current-row
-        style="width: 100%"
-      >
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false"
-          >Confirm</el-button
-        >
-      </span>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchList } from "@/api/ott-merchant-merchant";
+import {
+  fetchList,
+  createMerchant,
+  updateMerchant,
+} from "@/api/ott-merchant-merchant";
 import waves from "@/directive/waves"; // waves directive
 import { parseTime } from "@/utils";
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
+import QrCode from "@/components/QrCode";
 
-const calendarTypeOptions = [
-  { key: "Regular", display_name: "Regular" },
-  { key: "Honor", display_name: "Honor" },
+const demoCreateForms = [
+  {
+    name: "Starbucks",
+    salesman: "Ellen",
+    status: "Valid",
+    merchant_type: "Corporation",
+    legal_person_did: "did:key:C5f7eb1a59Df87b22066f6e012f1d4569eA9fb69",
+    address: "5140 Yonge St, Toronto, ON",
+    email: "customercare@starbucks.com",
+    business_license_type: "Corporation",
+    business_license_no: "829374829",
+    business_license_name: "Starbucks Corporation",
+    business_license_expired: Date.parse("01 Jan 2030 00:00:00 GMT"),
+
+    // Account
+    account_bank_name: "TD Canada Trust",
+    account_branch_no: "22322",
+    account_branch_address: "55 King St W, Toronto, ON M5K 1A2, Canada",
+    account_bank_no: "8173829",
+    account_routing_no: "000832918",
+    account_swift_code: "TDOMCATTTOR",
+    account_bank_holder_name: "Starbucks Corporation",
+    account_bank_holder_address: "5140 Yonge St, Toronto, ON",
+
+    // platform service setting:
+    platform_service_fee_percentage: "2%",
+  },
+  {
+    name: "OneZo Tapioca",
+    status: "Valid",
+    salesman: "Alex",
+    merchant_type: "Corporation",
+    legal_person_did: "did:key:0926eD4419750B582e2c6428e59d92bbf117915B",
+    address: "297 College St, Toronto, ON M5T 1S2",
+    email: "info@onezointernational.com",
+    business_license_type: "Corporation",
+    business_license_no: "824391847",
+    business_license_name: "OneZo Tapioca Corporation",
+    business_license_expired: Date.parse("01 Jan 2035 00:00:00 GMT"),
+
+    // Account
+    account_bank_name: "RBC Royal Bank",
+    account_branch_no: "00002",
+    account_branch_address:
+      "200 Bay St. Main Floor, Toronto, ON M5J 2J5, Canada",
+    account_bank_no: "2930248",
+    account_routing_no: "001284829",
+    account_swift_code: "TDOMCATTTOR",
+    account_bank_holder_name: "ROYCCAT2",
+    account_bank_holder_address: "297 College St, Toronto, ON M5T 1S2",
+
+    // platform service setting:
+    platform_service_fee_percentage: "2%",
+  },
+  {
+    name: "Ralph Lauren Corporation",
+    salesman: "Tommy",
+    status: "Valid",
+    merchant_type: "Corporation",
+    legal_person_did: "did:key:C5f7eb1a59Df87b22066f6e012f1d4569eA9fb69",
+    address: "3311 Simcoe 89 Unit G01, Cookstown, ON L0L 1L0, Canada",
+    email: "CustomerAssistance@RalphLauren.com",
+    business_license_type: "Corporation",
+    business_license_no: "6240129347",
+    business_license_name: "Ralph Lauren Corporation",
+    business_license_expired: Date.parse("01 Jan 2035 00:00:00 GMT"),
+
+    // Account
+    account_bank_name: "TD Canada Trust",
+    account_branch_no: "16402",
+    account_branch_address: "443 Queen St W, Toronto, ON M5V 2B1, Canada",
+    account_bank_no: "9873573",
+    account_routing_no: "000412262",
+    account_swift_code: "TDOMCATTTOR",
+    account_bank_holder_name: "Ralph Lauren Corporation",
+    account_bank_holder_address:
+      "3311 Simcoe 89 Unit G01, Cookstown, ON L0L 1L0, Canada",
+
+    // platform service setting:
+    platform_service_fee_percentage: "2%",
+  },
 ];
 
-// arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name;
-  return acc;
-}, {});
-
 export default {
-  name: "MembershipTable",
-  components: { Pagination },
+  name: "OttMerchant",
+  components: { Pagination, QrCode },
   directives: { waves },
   filters: {
-    activeFilter(status) {
+    statusFilter(status) {
       const statusMap = {
-        Yes: "success",
-        No: "danger",
+        Valid: "success",
+        Invalid: "danger",
       };
       return statusMap[status];
-    },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type];
     },
   },
   data() {
@@ -286,47 +441,70 @@ export default {
         page: 1,
         limit: 20,
         name: undefined,
-        type: undefined,
+        merchant_type: undefined,
         sort: "+id",
       },
-      importanceOptions: [1, 2, 3],
-      calendarTypeOptions,
       sortOptions: [
         { label: "ID Ascending", key: "+id" },
         { label: "ID Descending", key: "-id" },
       ],
       statusOptions: ["No", "Yes"],
+      salesmanList: ["Ellen", "Tommy", "Alex"],
+      merchantTypeList: [
+        "Individual",
+        "Corporate",
+        "Construction Owner",
+        "Private Sector",
+      ],
+      businessLicenseTypeList: [
+        "Sole Proprietorship ",
+        "General Partnership",
+        "Corporation",
+      ],
+      bankNameList: ["TD Canada Trust", "RBC Royal Bank"],
+      currentQrData: "",
       temp: {
         id: undefined,
-        importance: 1,
-        remark: "",
-        timestamp: new Date(),
-        title: "",
-        type: "",
-        status: "published",
+        name: "",
+        status: "Valid",
+        salesman: "",
+        merchant_type: "",
+        legal_person_did: "",
+        address: "",
+        email: "",
+        business_license_type: "",
+        business_license_no: "",
+        business_license_name: "",
+        business_license_expired: "",
+
+        // Account
+        account_bank_name: "",
+        account_branch_no: "",
+        account_branch_address: "",
+        account_bank_no: "",
+        account_routing_no: "",
+        account_swift_code: "",
+        account_bank_holder_name: "",
+        account_bank_holder_address: "",
+
+        // platform service setting:
+        platform_service_fee_percentage: "2%",
       },
       dialogFormVisible: false,
+      qrDialogVisible: false,
       dialogStatus: "",
       textMap: {
-        update: "Edit",
-        create: "Create",
+        update: "Edit Merchant",
+        create: "Create New Merchant",
       },
       dialogPvVisible: false,
-      pvData: [],
       rules: {
-        type: [
-          { required: true, message: "type is required", trigger: "change" },
-        ],
-        timestamp: [
+        name: [
           {
-            type: "date",
             required: true,
-            message: "timestamp is required",
-            trigger: "change",
+            message: "merchant name is required",
+            trigger: "blur",
           },
-        ],
-        title: [
-          { required: true, message: "title is required", trigger: "blur" },
         ],
       },
       downloadLoading: false,
@@ -370,17 +548,17 @@ export default {
       this.handleFilter();
     },
     resetTemp() {
-      this.temp = {
-        id: undefined,
-        importance: 1,
-        remark: "",
-        timestamp: new Date(),
-        title: "",
-        status: "published",
-        type: "",
-      };
+      let randomIdx = Math.floor(Math.random() * demoCreateForms.length);
+      this.temp = demoCreateForms[randomIdx];
     },
-    handleView(row) {},
+    handleQrClick(row) {
+      console.log("click on qr", row);
+      this.currentQrData = `${row.qr_pay}`;
+      this.qrDialogVisible = true;
+    },
+    handleView(row) {
+      this.$router.push(`/ott/merchant/detail/${row.id}`);
+    },
     handleCreate() {
       this.resetTemp();
       this.dialogStatus = "create";
@@ -394,7 +572,7 @@ export default {
         if (valid) {
           this.temp.id = parseInt(Math.random() * 100) + 1024; // mock a id
           this.temp.author = "vue-element-admin";
-          createArticle(this.temp).then(() => {
+          createMerchant(this.temp).then(() => {
             this.list.unshift(this.temp);
             this.dialogFormVisible = false;
             this.$notify({
@@ -408,9 +586,7 @@ export default {
       });
     },
     handleUpdate(row) {
-      return;
       this.temp = Object.assign({}, row); // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp);
       this.dialogStatus = "update";
       this.dialogFormVisible = true;
       this.$nextTick(() => {
@@ -422,7 +598,7 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp);
           tempData.timestamp = +new Date(tempData.timestamp); // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateArticle(tempData).then(() => {
+          updateMerchant(tempData).then(() => {
             const index = this.list.findIndex((v) => v.id === this.temp.id);
             this.list.splice(index, 1, this.temp);
             this.dialogFormVisible = false;
@@ -445,12 +621,7 @@ export default {
       });
       this.list.splice(index, 1);
     },
-    handleFetchPv(pv) {
-      fetchPv(pv).then((response) => {
-        this.pvData = response.data.pvData;
-        this.dialogPvVisible = true;
-      });
-    },
+
     handleDownload() {
       this.downloadLoading = true;
       import("@/vendor/Export2Excel").then((excel) => {
@@ -489,3 +660,28 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.form-info-first {
+  font-size: large;
+}
+.form-info {
+  margin-top: 40px;
+  font-size: large;
+}
+.el-dialog-div {
+  height: 300px;
+  overflow: auto;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.qr-wrapper {
+  display: inline-block;
+  position: relative;
+}
+
+.qr-wrapper img {
+  margin: 0 auto;
+}
+</style>
