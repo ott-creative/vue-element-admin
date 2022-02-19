@@ -8,11 +8,17 @@
       autocomplete="on"
       label-position="left"
     >
+      <div style="text-align: center">
+        <img
+          class="login-logo"
+          src="https://tiger-space.sgp1.digitaloceanspaces.com/admin-logo.png"
+        />
+      </div>
       <div class="title-container">
         <h3 class="title">OTT Club Admin Login</h3>
       </div>
 
-      <el-form-item prop="username">
+      <el-form-item prop="username" class="login-input">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
@@ -33,7 +39,7 @@
         placement="right"
         manual
       >
-        <el-form-item prop="password">
+        <el-form-item prop="password" class="login-input">
           <span class="svg-container">
             <svg-icon icon-class="password" />
           </span>
@@ -218,8 +224,8 @@ export default {
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
 $bg: #283443;
-$light_gray: #fff;
-$cursor: #fff;
+$light_gray: rgb(241, 245, 247);
+$cursor: rgb(245, 243, 243);
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
   .login-container .el-input input {
@@ -262,8 +268,8 @@ $cursor: #fff;
 
 <style lang="scss" scoped>
 $bg: #2d3a4b;
-$dark_gray: #889aa4;
-$light_gray: #eee;
+$dark_gray: #eaecee;
+$light_gray: rgb(88, 126, 143);
 
 .login-container {
   min-height: 100%;
@@ -271,18 +277,29 @@ $light_gray: #eee;
   background-color: $bg;
   overflow: hidden;
 
+  background-image: url("https://tiger-space.sgp1.digitaloceanspaces.com/login-bg.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
   .login-form {
+    border-radius: 25px;
+    background-color: rgb(255, 255, 255);
     position: relative;
-    width: 520px;
+    width: 400px;
     max-width: 100%;
-    padding: 160px 35px 0;
-    margin: 0 auto;
+    padding: 50px 35px 0;
+    //margin: 100px 30px 60px 300px;
+    margin-top: 200px;
+    margin-right: 100px;
+    float: right;
     overflow: hidden;
+    color: rgb(250, 249, 249);
   }
 
   .tips {
     font-size: 14px;
-    color: #fff;
+    color: rgb(245, 240, 240);
     margin-bottom: 10px;
 
     span {
@@ -326,6 +343,14 @@ $light_gray: #eee;
     position: absolute;
     right: 0;
     bottom: 6px;
+  }
+
+  .login-input {
+    background: rgb(6, 92, 141);
+  }
+
+  .login-logo {
+    margin: 0px auto;
   }
 
   @media only screen and (max-width: 470px) {
