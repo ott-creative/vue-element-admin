@@ -15,7 +15,15 @@ for (let i = 0; i < count; i++) {
         platform_service_fee: '@integer(100, 5000)',
         receivable_amount: '@integer(100, 5000)',
         'clearing_status|1': ['Success', 'Pending', 'Error'],
-        transaction_time: +Mock.Random.date('T')
+        transaction_time: +Mock.Random.date('T'),
+        clearing_start_time: +Mock.Random.date('T'),
+        clearing_end_time: +Mock.Random.date('T'),
+        clearing_club_receiver_id: 123,
+        clearing_merchant_receiver_id: 124,
+        clearing_club_receiver_name: "Golf Club",
+        clearing_merchant_receiver_name: "Golf Merchant",
+        clearing_platform_receiver_id: 125,
+        clearing_platform_receiver_name: "Platform",
     }))
 }
 
@@ -44,6 +52,31 @@ module.exports = [
                     items: pageList
                 }
             }
+        }
+    },
+    {
+        url: '/ott/transaction/clearing/detail',
+        type: 'get',
+        response: config => {
+            const { id } = config.query
+
+            let result = undefined;
+            for (const item of List) {
+                console.log(item);
+                if (item.order_id == id) {
+                    return {
+                        code: 20000,
+                        data: item
+                    }
+                }
+            }
+
+            console.log("result:", result);
+
+            return {
+                code: 30000,
+            }
+
         }
     },
 

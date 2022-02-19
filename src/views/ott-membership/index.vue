@@ -155,16 +155,16 @@
         class-name="small-padding fixed-width"
       >
         <template slot-scope="{ row }">
+          <el-button type="primary" size="mini" @click="handleDetail(row)">
+            Detail
+          </el-button>
           <el-button
-            type="primary"
+            type="warning"
             :disabled="1"
             size="mini"
             @click="handleUpdate(row)"
           >
             Edit
-          </el-button>
-          <el-button type="danger" size="mini" @click="handleUpdate(row)">
-            KYC
           </el-button>
         </template>
       </el-table-column>
@@ -409,6 +409,9 @@ export default {
         status: "published",
         type: "",
       };
+    },
+    handleDetail(row) {
+      this.$router.push(`/ott/membership/detail/${row.id}`);
     },
     handleCreate() {
       this.resetTemp();

@@ -330,7 +330,9 @@ export default {
       this.listQuery.page = 1;
       this.getList();
     },
-    handleDetail(row) {},
+    handleDetail(row) {
+      this.$router.push(`/ott/transaction/settlement/detail/${row.id}`);
+    },
     handleModifyStatus(row, status) {
       this.$message({
         message: "Operate Success",

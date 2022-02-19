@@ -47,43 +47,33 @@ module.exports = [
             }
         }
     },
-
     {
-        url: '/vue-element-admin/article/detail',
+        url: '/ott/membership/detail',
         type: 'get',
         response: config => {
             const { id } = config.query
-            for (const article of List) {
-                if (article.id === +id) {
+
+            let result = undefined;
+            for (const item of List) {
+                console.log(item);
+                if (item.id == id) {
                     return {
                         code: 20000,
-                        data: article
+                        data: item
                     }
                 }
             }
-        }
-    },
 
-    {
-        url: '/vue-element-admin/article/pv',
-        type: 'get',
-        response: _ => {
+            console.log("result:", result);
+
             return {
-                code: 20000,
-                data: {
-                    pvData: [
-                        { key: 'PC', pv: 1024 },
-                        { key: 'mobile', pv: 1024 },
-                        { key: 'ios', pv: 1024 },
-                        { key: 'android', pv: 1024 }
-                    ]
-                }
+                code: 30000,
             }
+
         }
     },
-
     {
-        url: '/vue-element-admin/article/create',
+        url: '/ott/membership/create',
         type: 'post',
         response: _ => {
             return {
@@ -92,9 +82,8 @@ module.exports = [
             }
         }
     },
-
     {
-        url: '/vue-element-admin/article/update',
+        url: '/ott/membership/update',
         type: 'post',
         response: _ => {
             return {

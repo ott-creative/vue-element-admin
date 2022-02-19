@@ -229,7 +229,9 @@ export default {
       }
       this.handleFilter();
     },
-    handleDetail(row) {},
+    handleDetail(row) {
+      this.$router.push(`/ott/transaction/clearing/detail/${row.order_id}`);
+    },
   },
 };
 </script>

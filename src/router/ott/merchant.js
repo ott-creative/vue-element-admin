@@ -9,14 +9,14 @@ const ottMerchantRouter = {
     name: 'Merchant',
     meta: {
         title: 'Merchant',
-        icon: 'tab'
+        icon: 'drag'
     },
     children: [
         {
             path: 'merchant',
             component: () => import('@/views/ott-merchant/merchant'),
             name: 'Merchant',
-            meta: { title: 'Merchant List', icon: 'tab' }
+            meta: { title: 'Merchant List', icon: 'component' }
         },
         {
             path: 'detail/:id',
@@ -27,7 +27,7 @@ const ottMerchantRouter = {
             path: 'setting',
             component: () => import('@/views/ott-merchant/setting-list'),
             name: 'Setting',
-            meta: { title: 'Merchant Setting', icon: 'tab' }
+            meta: { title: 'Merchant Setting', icon: 'skill' }
         }
     ]
 }

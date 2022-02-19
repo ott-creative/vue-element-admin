@@ -2,24 +2,24 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input
-        v-model="listQuery.name"
+        v-model="listQuery.merchant_name"
         placeholder="Name"
         style="width: 200px"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
       <el-select
-        v-model="listQuery.type"
-        placeholder="Type"
+        v-model="listQuery.merchant_type"
+        placeholder="Merchant Type"
         clearable
         class="filter-item"
         style="width: 130px"
       >
         <el-option
-          v-for="item in calendarTypeOptions"
-          :key="item.key"
-          :label="item.display_name"
-          :value="item.key"
+          v-for="item in merchantTypeList"
+          :key="item"
+          :label="item"
+          :value="item"
         />
       </el-select>
       <el-select
@@ -60,6 +60,7 @@
         type="primary"
         icon="el-icon-download"
         @click="handleDownload"
+        disabled="disabled"
       >
         Export
       </el-button>
@@ -102,14 +103,9 @@
           <span>{{ row.clearing_rule }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Clearing Fee" align="center">
+      <el-table-column label="Clearing Value" align="center">
         <template slot-scope="{ row }">
-          <span>{{ row.clearing_fee | filterClearingFee }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Clearing Percentage" align="center">
-        <template slot-scope="{ row }">
-          <span>{{ row.clearing_percentage | filterClearingPercentage }}</span>
+          <span>{{ row | filterClearingValue }}</span>
         </template>
       </el-table-column>
       <el-table-column label="Minimum Settlement Amount" align="center">
@@ -149,62 +145,72 @@
         :rules="rules"
         :model="temp"
         label-position="left"
-        label-width="70px"
-        style="width: 400px; margin-left: 50px"
+        label-width="200px"
+        style="width: 450px; margin-left: 50px"
       >
-        <el-form-item label="Merchant Name" prop="merchant_name">
+        <div class="form-info-first">Merchant Clearing Setting</div>
+        <el-divider direction="horizontal" content-position="center" />
+        <el-form-item label="Merchant Name">
           <el-select
-            v-model="temp.merchant_name"
+            v-model="merchantList"
             class="filter-item"
             placeholder="Please select"
           >
             <el-option
-              v-for="item in newMerchantList"
-              :key="item.key"
-              :label="item.display_name"
-              :value="item.key"
+              v-for="item in merchantList"
+              :key="item.merchant_id"
+              :label="item.merchant_name"
+              :value="item.merchant_name"
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="Date" prop="timestamp">
-          <el-date-picker
-            v-model="temp.timestamp"
-            type="datetime"
-            placeholder="Please pick a date"
-          />
-        </el-form-item>
-        <el-form-item label="Title" prop="title">
-          <el-input v-model="temp.title" />
-        </el-form-item>
-        <el-form-item label="Status">
+        <el-form-item label="Clearing Rule" prop="clearing_rule">
           <el-select
-            v-model="temp.status"
+            v-model="temp.clearing_rule"
             class="filter-item"
             placeholder="Please select"
           >
             <el-option
-              v-for="item in statusOptions"
+              v-for="item in clearingRules"
               :key="item"
               :label="item"
               :value="item"
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="Imp">
-          <el-rate
-            v-model="temp.importance"
-            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-            :max="3"
-            style="margin-top: 8px"
-          />
+        <el-form-item label="Clearing Setting Value" prop="clearing_value">
+          <el-input v-model="temp.clearing_value" />
         </el-form-item>
-        <el-form-item label="Remark">
-          <el-input
-            v-model="temp.remark"
-            :autosize="{ minRows: 2, maxRows: 4 }"
-            type="textarea"
-            placeholder="Please input"
-          />
+
+        <div class="form-info">Settlement Setting</div>
+        <el-divider direction="horizontal" content-position="center" />
+        <el-form-item label="Minimum Settlement Amount">
+          <el-select
+            v-model="temp.minimum_settlement_amount"
+            class="filter-item"
+            placeholder="Please select"
+          >
+            <el-option
+              v-for="item in settlementAmountList"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Settlement Period">
+          <el-select
+            v-model="temp.settlement_period"
+            class="filter-item"
+            placeholder="Please select"
+          >
+            <el-option
+              v-for="item in settlementAmountList"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -217,80 +223,54 @@
         </el-button>
       </div>
     </el-dialog>
-
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table
-        :data="pvData"
-        border
-        fit
-        highlight-current-row
-        style="width: 100%"
-      >
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false"
-          >Confirm</el-button
-        >
-      </span>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchList } from "@/api/ott-merchant-setting";
+import { fetchList as fetchMerchantList } from "@/api/ott-merchant-merchant";
+import {
+  fetchList,
+  createMerchantSetting,
+  updateMerchantSetting,
+} from "@/api/ott-merchant-setting";
 import waves from "@/directive/waves"; // waves directive
 import { parseTime } from "@/utils";
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
-
-const calendarTypeOptions = [
-  { key: "Regular", display_name: "Regular" },
-  { key: "Honor", display_name: "Honor" },
-];
-
-// arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name;
-  return acc;
-}, {});
 
 export default {
   name: "OttMerchantSettingList",
   components: { Pagination },
   directives: { waves },
   filters: {
-    activeFilter(status) {
-      const statusMap = {
-        Yes: "success",
-        No: "danger",
-      };
-      return statusMap[status];
-    },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type];
-    },
-    filterClearingFee(value) {
-      return value == -1 ? "-" : `\$${value}`;
-    },
-    filterClearingPercentage(value) {
-      return value == -1 ? "-" : `${value}%`;
+    filterClearingValue(row) {
+      return row.clearing_rule == "Fixed Amount"
+        ? `\$${row.clearing_value}`
+        : `${row.clearing_value}%`;
     },
   },
   data() {
     return {
       tableKey: 0,
+      merchantTypeList: [
+        "Individual",
+        "Corporate",
+        "Construction Owner",
+        "Private Sector",
+      ],
+      merchantList: [],
+      clearingRules: ["Fixed Amount", "Fixed Percentage"],
+      settlementAmountList: [100, 200, 500, 1000],
+      settlementPeriod: [0, 1, 7],
       list: null,
       total: 0,
       listLoading: true,
       listQuery: {
         page: 1,
         limit: 20,
-        name: undefined,
-        type: undefined,
+        merchant_name: undefined,
+        merchant_type: undefined,
         sort: "+merchant_id",
       },
-      calendarTypeOptions,
       sortOptions: [
         { label: "ID Ascending", key: "+id" },
         { label: "ID Descending", key: "-id" },
@@ -299,10 +279,9 @@ export default {
       temp: {
         merchant_name: "",
         clearing_rule: "Fixed Amount",
-        clearing_fee: 10,
-        clearing_percentage: 10,
-        minimum_settlement_amount: 10,
-        settlement_period: 1,
+        clearing_value: 10,
+        minimum_settlement_amount: 100,
+        settlement_period: 0,
       },
       dialogFormVisible: false,
       dialogStatus: "",
@@ -310,28 +289,13 @@ export default {
         update: "Edit",
         create: "Create",
       },
-      dialogPvVisible: false,
-      rules: {
-        type: [
-          { required: true, message: "type is required", trigger: "change" },
-        ],
-        timestamp: [
-          {
-            type: "date",
-            required: true,
-            message: "timestamp is required",
-            trigger: "change",
-          },
-        ],
-        title: [
-          { required: true, message: "title is required", trigger: "blur" },
-        ],
-      },
+      rules: {},
       downloadLoading: false,
     };
   },
   created() {
     this.getList();
+    this.getMerchantList();
   },
   methods: {
     getList() {
@@ -340,6 +304,13 @@ export default {
         this.listLoading = false;
         this.list = response.data.items;
         this.total = response.data.total;
+      });
+    },
+    getMerchantList() {
+      this.listLoading = true;
+      fetchMerchantList().then((response) => {
+        this.listLoading = false;
+        this.merchantList = response.data.items;
       });
     },
     handleFilter() {
@@ -355,7 +326,7 @@ export default {
     },
     sortChange(data) {
       const { prop, order } = data;
-      if (prop === "id") {
+      if (prop === "merchant_id") {
         this.sortByID(order);
       }
     },
@@ -369,13 +340,11 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        id: undefined,
-        importance: 1,
-        remark: "",
-        timestamp: new Date(),
-        title: "",
-        status: "published",
-        type: "",
+        merchant_name: "",
+        clearing_rule: "Fixed Amount",
+        clearing_value: 10,
+        minimum_settlement_amount: 100,
+        settlement_period: 0,
       };
     },
     handleView(row) {},
@@ -390,9 +359,8 @@ export default {
     createData() {
       this.$refs["dataForm"].validate((valid) => {
         if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024; // mock a id
-          this.temp.author = "vue-element-admin";
-          createArticle(this.temp).then(() => {
+          this.temp.merchant_id = parseInt(Math.random() * 100) + 1024; // mock a id
+          createMerchantSetting(this.temp).then(() => {
             this.list.unshift(this.temp);
             this.dialogFormVisible = false;
             this.$notify({
@@ -406,9 +374,7 @@ export default {
       });
     },
     handleUpdate(row) {
-      return;
       this.temp = Object.assign({}, row); // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp);
       this.dialogStatus = "update";
       this.dialogFormVisible = true;
       this.$nextTick(() => {
@@ -419,8 +385,7 @@ export default {
       this.$refs["dataForm"].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp);
-          tempData.timestamp = +new Date(tempData.timestamp); // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateArticle(tempData).then(() => {
+          updateMerchantSetting(tempData).then(() => {
             const index = this.list.findIndex((v) => v.id === this.temp.id);
             this.list.splice(index, 1, this.temp);
             this.dialogFormVisible = false;
@@ -432,21 +397,6 @@ export default {
             });
           });
         }
-      });
-    },
-    handleDelete(row, index) {
-      this.$notify({
-        title: "Success",
-        message: "Delete Successfully",
-        type: "success",
-        duration: 2000,
-      });
-      this.list.splice(index, 1);
-    },
-    handleFetchPv(pv) {
-      fetchPv(pv).then((response) => {
-        this.pvData = response.data.pvData;
-        this.dialogPvVisible = true;
       });
     },
     handleDownload() {
@@ -487,3 +437,13 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.form-info-first {
+  font-size: large;
+}
+.form-info {
+  margin-top: 40px;
+  font-size: large;
+}
+</style>

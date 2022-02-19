@@ -30,7 +30,7 @@ export default {
   data() {
     return {
       title: "OTT Club Admin",
-      logo: "https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png",
+      logo: "https://tiger-space.sgp1.digitaloceanspaces.com/admin-logo.png",
     };
   },
 };

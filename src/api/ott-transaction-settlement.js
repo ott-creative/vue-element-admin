@@ -8,3 +8,11 @@ export function fetchList(query) {
     })
 }
 
+export function fetchDetail(query) {
+    return request({
+        url: '/ott/transaction/settlement/detail',
+        method: 'get',
+        params: query
+    })
+}
+

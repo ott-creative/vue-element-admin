@@ -8,11 +8,11 @@ export function fetchList(query) {
   })
 }
 
-export function fetchMember(id) {
+export function fetchDetail(query) {
   return request({
     url: '/ott/membership/detail',
     method: 'get',
-    params: { id }
+    params: query
   })
 }
 

@@ -15,3 +15,11 @@ export function fetchList(query) {
         params: query
     })
 }
+
+export function fetchDetail(query) {
+    return request({
+        url: '/ott/transaction/clearing/detail',
+        method: 'get',
+        params: query
+    })
+}

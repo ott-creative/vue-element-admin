@@ -9,32 +9,42 @@ const ottTransactionRouter = {
     name: 'Transaction',
     meta: {
         title: 'Transaction',
-        icon: 'tab'
+        icon: 'table'
     },
     children: [
         {
             path: 'transaction',
             component: () => import('@/views/ott-transaction/transaction'),
             name: 'Transaction',
-            meta: { title: 'Transaction', icon: 'tab' }
+            meta: { title: 'Transaction', icon: 'documentation' }
         },
         {
             path: 'clearing',
             component: () => import('@/views/ott-transaction/clearing'),
             name: 'Clearing',
-            meta: { title: 'Clearing', icon: 'tab' }
+            meta: { title: 'Clearing', icon: 'excel' }
+        },
+        {
+            path: 'clearing/detail/:id',
+            component: () => import('@/views/ott-transaction/clearing-detail'),
+            hidden: true
         },
         {
             path: 'refund',
             component: () => import('@/views/ott-transaction/refund'),
             name: 'Refund',
-            meta: { title: 'Refund', icon: 'tab' }
+            meta: { title: 'Refund', icon: 'list' }
         },
         {
             path: 'settlement',
             component: () => import('@/views/ott-transaction/settlement'),
             name: 'Settlement',
-            meta: { title: 'Settlement', icon: 'tab' }
+            meta: { title: 'Settlement', icon: 'pdf' }
+        },
+        {
+            path: 'settlement/detail/:id',
+            component: () => import('@/views/ott-transaction/settlement-detail'),
+            hidden: true
         },
     ]
 }

@@ -9,8 +9,7 @@ for (let i = 0; i < count; i++) {
         merchant_name: '@first',
         'merchant_type|1': ['Individual', 'Corporate'],
         'clearing_rule|1': ['Fixed Amount', 'Fixed Percentage'],
-        'clearing_fee|1': [-1, 10],
-        'clearing_percentage|1': [-1, 5],
+        'clearing_value|1': [5, 10],
         minimum_settlement_amount: '@integer(10, 20)',
         settlement_period: '@integer(3, 5)',
     }))

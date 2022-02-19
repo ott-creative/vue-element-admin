@@ -17,7 +17,12 @@ const ottMembershipRouter = {
       component: () => import('@/views/ott-membership/index'),
       name: 'Membership',
       meta: { title: 'Membership', icon: 'user' }
-    }
+    },
+    {
+      path: 'detail/:id',
+      component: () => import('@/views/ott-membership/detail'),
+      hidden: true
+    },
   ]
 }
 
