@@ -145,7 +145,7 @@
         :rules="rules"
         :model="temp"
         label-position="left"
-        label-width="200px"
+        label-width="250px"
         style="width: 450px; margin-left: 50px"
       >
         <div class="form-info-first">Merchant Clearing Setting</div>
