@@ -7,21 +7,43 @@
     </el-row>
 
     <el-row :gutter="32">
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <raddar-chart />
-        </div>
-      </el-col>
-      <el-col :xs="24" :sm="24" :lg="8">
+      <el-col :xs="12" :sm="12" :lg="12">
         <div class="chart-wrapper">
           <pie-chart />
         </div>
       </el-col>
-      <el-col :xs="24" :sm="24" :lg="8">
+      <el-col :xs="12" :sm="12" :lg="12">
         <div class="chart-wrapper">
           <bar-chart />
         </div>
       </el-col>
+    </el-row>
+    <el-row :gutter="32">
+
+      <el-col :xs="12" :sm="12" :lg="12">
+          <el-row :gutter="24">
+            <el-col :xs="12" :sm="12" :lg="24">
+              <div class="chart-wrapper">
+                <bar-chart-2 />
+              </div>
+            </el-col>
+          </el-row>
+        <el-row :gutter="24">
+            <el-col :xs="12" :sm="12" :lg="24">
+              <div class="chart-wrapper">
+                <bar-chart-3 />
+              </div>
+            </el-col>
+          </el-row>
+        
+      </el-col>
+
+      <el-col :xs="12" :sm="12" :lg="12">
+        <div class="chart-wrapper">
+          <pie-chart-2 />
+        </div>
+      </el-col>
+      
     </el-row>
   </div>
 </template>
@@ -32,9 +54,13 @@ import LineChart from './components/LineChart'
 import RaddarChart from './components/RaddarChart'
 import PieChart from './components/PieChart'
 import BarChart from './components/BarChart'
+import BarChart2 from './components/BarChart2'
 import TransactionTable from './components/TransactionTable'
 import TodoList from './components/TodoList'
 import BoxCard from './components/BoxCard'
+import PieChart2 from './components/PieChart2'
+import BarChart3 from './components/BarChart3'
+import BarChart4 from './components/BarChart4'
 
 const lineChartData = {
   members: {
@@ -65,7 +91,11 @@ export default {
     BarChart,
     TransactionTable,
     TodoList,
-    BoxCard
+    BoxCard,
+    BarChart2,
+    PieChart2,
+    BarChart3,
+    BarChart4
   },
   data() {
     return {

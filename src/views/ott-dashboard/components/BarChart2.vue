@@ -22,7 +22,7 @@ export default {
     },
     height: {
       type: String,
-      default: '300px'
+      default: '125px'
     }
   },
   data() {
@@ -47,9 +47,6 @@ export default {
       this.chart = echarts.init(this.$el, 'macarons')
 
       this.chart.setOption({
-        title: {
-          text: 'Member Top Up Amount'
-        },
         tooltip: {
           trigger: 'axis',
           axisPointer: { // 坐标轴指示器，坐标轴触发有效
@@ -57,52 +54,35 @@ export default {
           }
         },
         legend: {
-          data: ['2021', '2022']
+          data: ['Male', 'Female']
         },
-        toolbox: {
-    show: true,
-    orient: 'vertical',
-    left: 'right',
-    top: 'center',
-    feature: {
-      mark: { show: false },
-      dataView: { show: true, readOnly: true },
-      magicType: { show: true, type: ['line', 'bar'] },
-      restore: { show: true },
-      saveAsImage: { show: true }
-    }
-  },
         grid: {
-          top: 50,
+          top: 10,
           left: '2%',
           right: '2%',
           bottom: '3%',
           containLabel: true
         },
         xAxis: [{
-          type: 'category',
-        axisTick: { show: false },
-          data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul','Aug','Sep','Oct','Nov','Dec'],
-        }],
-        yAxis: [{
           type: 'value',
-          axisTick: {
-            show: false
-          }
         }],
+         yAxis: {
+          type: 'category',
+          data: ['Gender']
+        },
         series: [{
-          name: '2021',
+          name: 'Male',
           type: 'bar',
-          // stack: 'vistors',
+           stack: 'total',
           // barWidth: '60%',
-          data: [790, 520, 200, 334, 390, 330, 220,790, 520, 200, 334, 390],
+          data: [79],
           animationDuration
         }, {
-          name: '2022',
+          name: 'Female',
           type: 'bar',
-          // stack: 'vistors',
+           stack: 'total',
           // barWidth: '60%',
-          data: [790, 520, 200, 334, 390, 330, 220,790, 520, 200, 334, 390],
+          data: [90],
           animationDuration
         }]
       })

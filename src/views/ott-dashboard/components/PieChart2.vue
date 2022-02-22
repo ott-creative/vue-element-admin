@@ -45,10 +45,9 @@ export default {
       this.chart = echarts.init(this.$el, 'macarons')
 
       this.chart.setOption({
-        title: {
-          text: 'Clearing detail in current month'
+         title: {
+          text: 'Active Member'
         },
-        
         tooltip: {
           trigger: 'item',
           formatter: '{a} <br/>{b} : {c} ({d}%)'
@@ -56,19 +55,18 @@ export default {
         legend: {
           left: 'center',
           bottom: '10',
-          data: ['Receivable Amount', 'Clearing Amount', 'Service Fee']
+          data: ['active', 'inactive']
         },
         series: [
           {
-            name: 'Clearing detail in current month',
+            name: 'Active Member',
             type: 'pie',
             roseType: 'radius',
             radius: [15, 95],
             center: ['50%', '38%'],
             data: [
-              { value: 320, name: 'Receivable Amount' },
-              { value: 240, name: 'Clearing Amount' },
-              { value: 149, name: 'Platform Service Fee' }
+              { value: 320, name: 'active' },
+              { value: 240, name: 'inactive' }
             ],
             animationEasing: 'cubicInOut',
             animationDuration: 2600

@@ -63,6 +63,9 @@ export default {
     },
     setOptions({ expectedData, actualData } = {}) {
       this.chart.setOption({
+         title: {
+          text: 'Consumption quota'
+        },
         xAxis: {
           data: [
             "Jan",
