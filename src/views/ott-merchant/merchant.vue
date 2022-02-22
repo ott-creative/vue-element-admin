@@ -36,6 +36,7 @@
         />
       </el-select>
       <el-button
+        disabled
         v-waves
         class="filter-item"
         type="primary"
@@ -77,22 +78,22 @@
       @sort-change="sortChange"
     >
       <el-table-column
-        label="Merchant ID"
+        label="ID"
         prop="id"
         sortable="custom"
         align="center"
         :class-name="getSortClass('id')"
       >
         <template slot-scope="{ row }">
-          <span>{{ row.id }}</span>
+          <span>{{ row.merchant_id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Merchant Name" align="center">
+      <el-table-column label="Name" align="center">
         <template slot-scope="{ row }">
-          {{ row.name }}
+          {{ row.merchant_name }}
         </template>
       </el-table-column>
-      <el-table-column label="Merchant Type" align="center">
+      <el-table-column label="Type" align="center">
         <template slot-scope="{ row }">
           <el-tag>
             {{ row.merchant_type }}
@@ -102,15 +103,15 @@
       <el-table-column
         label="Business License Name"
         align="center"
-        width="180px"
+        width="200px"
       >
         <template slot-scope="{ row }">
           <span>{{ row.business_license_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Business License #" align="center">
+      <el-table-column label="Business License #" align="center" width="200px">
         <template slot-scope="{ row }">
-          <span>{{ row.business_license_no }}</span>
+          <span>{{ row.business_license }}</span>
         </template>
       </el-table-column>
       <!--<el-table-column label="Legal Person DID" align="center">
@@ -118,17 +119,17 @@
           <span>{{ row.legal_person_did }}</span>
         </template>
       </el-table-column>-->
-      <el-table-column label="Merchant Status" align="center">
+      <el-table-column label="Status" align="center">
         <template slot-scope="{ row }">
-          <el-tag :type="row.status | statusFilter">
-            <span>{{ row.status }}</span>
+          <el-tag :type="row.merchant_status | statusFilter">
+            <span>{{ row.merchant_status }}</span>
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="QR" align="center">
+      <el-table-column label="PAY QR" align="center">
         <template slot-scope="{ row }">
           <div class="qr-wrapper" v-on:click="handleQrClick(row)">
-            <QrCode :width="30" :height="30" :content="row.qr_pay" />
+            <QrCode :width="30" :height="30" :content="row.qr_code" />
           </div>
         </template>
       </el-table-column>
@@ -143,7 +144,12 @@
             Detail
           </el-button>
 
-          <el-button type="warning" size="mini" @click="handleUpdate(row)">
+          <el-button
+            disabled
+            type="warning"
+            size="mini"
+            @click="handleUpdate(row)"
+          >
             Edit
           </el-button>
         </template>
@@ -182,11 +188,11 @@
         <div class="form-info-first">Merchant Basic Information</div>
         <el-divider direction="horizontal" content-position="center" />
         <el-form-item label="Merchant Name" prop="name">
-          <el-input v-model="temp.name" />
+          <el-input v-model="temp.merchant_name" />
         </el-form-item>
         <el-form-item label="Salesman">
           <el-select
-            v-model="temp.salesman"
+            v-model="temp.salesman_name"
             class="filter-item"
             placeholder="Please select"
           >
@@ -218,9 +224,6 @@
         <el-form-item label="Address" prop="address">
           <el-input v-model="temp.address" />
         </el-form-item>
-        <el-form-item label="Email" prop="email">
-          <el-input v-model="temp.email" />
-        </el-form-item>
         <el-form-item
           label="Business License Type"
           prop="business_license_type"
@@ -239,7 +242,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="Business License #" prop="business_license_no">
-          <el-input v-model="temp.business_license_no" />
+          <el-input v-model="temp.business_license" />
         </el-form-item>
         <el-form-item
           label="Business License Name"
@@ -252,7 +255,7 @@
           prop="business_license_expired"
         >
           <el-date-picker
-            v-model="temp.business_license_expired"
+            v-model="temp.business_license_exp_date"
             type="datetime"
             placeholder="Please pick a date"
           />
@@ -262,7 +265,7 @@
         <el-divider direction="horizontal" content-position="center" />
         <el-form-item label="Bank Name">
           <el-select
-            v-model="temp.account_bank_name"
+            v-model="temp.bank_name"
             class="filter-item"
             placeholder="Please select"
           >
@@ -275,31 +278,31 @@
           </el-select>
         </el-form-item>
         <el-form-item label="Branch Number" prop="account_branch_no">
-          <el-input v-model="temp.account_branch_no" />
+          <el-input v-model="temp.branch_number" />
         </el-form-item>
         <el-form-item label="Branch Full Address" prop="account_branch_address">
-          <el-input v-model="temp.account_branch_address" />
+          <el-input v-model="temp.branch_full_address" />
         </el-form-item>
         <el-form-item label="Bank Account Number" prop="account_bank_no">
-          <el-input v-model="temp.account_bank_no" />
+          <el-input v-model="temp.bank_account_number" />
         </el-form-item>
         <el-form-item label="Routing Number" prop="account_routing_no">
-          <el-input v-model="temp.account_routing_no" />
+          <el-input v-model="temp.routing_number" />
         </el-form-item>
         <el-form-item label="Swift Code" prop="account_swift_code">
-          <el-input v-model="temp.account_swift_code" />
+          <el-input v-model="temp.swift_code" />
         </el-form-item>
         <el-form-item
           label="Account Holder Name"
           prop="account_bank_holder_name"
         >
-          <el-input v-model="temp.account_bank_holder_name" />
+          <el-input v-model="temp.account_holder_name" />
         </el-form-item>
         <el-form-item
           label="Account Holder Address"
           prop="account_bank_holder_address"
         >
-          <el-input v-model="temp.account_bank_holder_address" />
+          <el-input v-model="temp.account_holder_address" />
         </el-form-item>
 
         <div class="form-info">Service Fee Setting</div>
@@ -308,7 +311,7 @@
           label="Platform Service Fee"
           prop="platform_service_fee_percentage"
         >
-          <el-input readonly placeholder="2%" />
+          <el-input v-model="temp.service_fee" readonly placeholder="0.02" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -337,84 +340,79 @@ import QrCode from "@/components/QrCode";
 
 const demoCreateForms = [
   {
-    name: "Starbucks",
-    salesman: "Ellen",
-    status: "Valid",
+    merchant_name: "Starbucks",
+    salesman_name: "Ellen",
     merchant_type: "Corporation",
     legal_person_did: "did:key:C5f7eb1a59Df87b22066f6e012f1d4569eA9fb69",
     address: "5140 Yonge St, Toronto, ON",
-    email: "customercare@starbucks.com",
+    legal_person_did: "did:key:17eC557d5769bd03e44673A2A7f6C9111f8E8b0A",
     business_license_type: "Corporation",
-    business_license_no: "829374829",
+    business_license: "829374829",
     business_license_name: "Starbucks Corporation",
-    business_license_expired: Date.parse("01 Jan 2030 00:00:00 GMT"),
+    business_license_exp_date: Date.parse("01 Jan 2030 00:00:00 GMT"),
 
     // Account
-    account_bank_name: "TD Canada Trust",
-    account_branch_no: "22322",
-    account_branch_address: "55 King St W, Toronto, ON M5K 1A2, Canada",
-    account_bank_no: "8173829",
-    account_routing_no: "000832918",
-    account_swift_code: "TDOMCATTTOR",
-    account_bank_holder_name: "Starbucks Corporation",
-    account_bank_holder_address: "5140 Yonge St, Toronto, ON",
+    bank_name: "TD Canada Trust",
+    branch_number: "22322",
+    branch_full_address: "55 King St W, Toronto, ON M5K 1A2, Canada",
+    bank_account_number: "8173829",
+    routing_number: "000832918",
+    swift_code: "TDOMCATTTOR",
+    account_holder_name: "Starbucks Corporation",
+    account_holder_address: "5140 Yonge St, Toronto, ON",
 
     // platform service setting:
-    platform_service_fee_percentage: "2%",
+    service_fee: 0.02,
   },
   {
-    name: "OneZo Tapioca",
-    status: "Valid",
-    salesman: "Alex",
+    merchant_name: "OneZo Tapioca",
+    salesman_name: "Alex",
     merchant_type: "Corporation",
     legal_person_did: "did:key:0926eD4419750B582e2c6428e59d92bbf117915B",
     address: "297 College St, Toronto, ON M5T 1S2",
-    email: "info@onezointernational.com",
     business_license_type: "Corporation",
-    business_license_no: "824391847",
+    business_license: "824391847",
     business_license_name: "OneZo Tapioca Corporation",
-    business_license_expired: Date.parse("01 Jan 2035 00:00:00 GMT"),
+    business_license_exp_date: Date.parse("01 Jan 2035 00:00:00 GMT"),
 
     // Account
-    account_bank_name: "RBC Royal Bank",
-    account_branch_no: "00002",
-    account_branch_address:
-      "200 Bay St. Main Floor, Toronto, ON M5J 2J5, Canada",
-    account_bank_no: "2930248",
-    account_routing_no: "001284829",
-    account_swift_code: "TDOMCATTTOR",
-    account_bank_holder_name: "ROYCCAT2",
-    account_bank_holder_address: "297 College St, Toronto, ON M5T 1S2",
+    bank_name: "RBC Royal Bank",
+    branch_number: "00002",
+    branch_full_address: "200 Bay St. Main Floor, Toronto, ON M5J 2J5, Canada",
+    bank_account_number: "2930248",
+    routing_number: "001284829",
+    swift_code: "TDOMCATTTOR",
+    account_holder_name: "ROYCCAT2",
+    account_holder_address: "297 College St, Toronto, ON M5T 1S2",
 
     // platform service setting:
-    platform_service_fee_percentage: "2%",
+    service_fee: 0.02,
   },
   {
-    name: "Ralph Lauren Corporation",
-    salesman: "Tommy",
+    merchant_name: "Ralph Lauren Corporation",
+    salesman_name: "Tommy",
     status: "Valid",
     merchant_type: "Corporation",
     legal_person_did: "did:key:C5f7eb1a59Df87b22066f6e012f1d4569eA9fb69",
     address: "3311 Simcoe 89 Unit G01, Cookstown, ON L0L 1L0, Canada",
-    email: "CustomerAssistance@RalphLauren.com",
     business_license_type: "Corporation",
-    business_license_no: "6240129347",
+    business_license: "6240129347",
     business_license_name: "Ralph Lauren Corporation",
-    business_license_expired: Date.parse("01 Jan 2035 00:00:00 GMT"),
+    business_license_exp_date: Date.parse("01 Jan 2035 00:00:00 GMT"),
 
     // Account
-    account_bank_name: "TD Canada Trust",
-    account_branch_no: "16402",
-    account_branch_address: "443 Queen St W, Toronto, ON M5V 2B1, Canada",
-    account_bank_no: "9873573",
-    account_routing_no: "000412262",
-    account_swift_code: "TDOMCATTTOR",
-    account_bank_holder_name: "Ralph Lauren Corporation",
-    account_bank_holder_address:
+    bank_name: "TD Canada Trust",
+    branch_number: "16402",
+    branch_full_address: "443 Queen St W, Toronto, ON M5V 2B1, Canada",
+    bank_account_number: "9873573",
+    routing_number: "000412262",
+    swift_code: "TDOMCATTTOR",
+    account_holder_name: "Ralph Lauren Corporation",
+    account_holder_address:
       "3311 Simcoe 89 Unit G01, Cookstown, ON L0L 1L0, Canada",
 
     // platform service setting:
-    platform_service_fee_percentage: "2%",
+    service_fee: 0.02,
   },
 ];
 
@@ -463,33 +461,7 @@ export default {
       ],
       bankNameList: ["TD Canada Trust", "RBC Royal Bank"],
       currentQrData: "",
-      temp: {
-        id: undefined,
-        name: "",
-        status: "Valid",
-        salesman: "",
-        merchant_type: "",
-        legal_person_did: "",
-        address: "",
-        email: "",
-        business_license_type: "",
-        business_license_no: "",
-        business_license_name: "",
-        business_license_expired: "",
-
-        // Account
-        account_bank_name: "",
-        account_branch_no: "",
-        account_branch_address: "",
-        account_bank_no: "",
-        account_routing_no: "",
-        account_swift_code: "",
-        account_bank_holder_name: "",
-        account_bank_holder_address: "",
-
-        // platform service setting:
-        platform_service_fee_percentage: "2%",
-      },
+      temp: {},
       dialogFormVisible: false,
       qrDialogVisible: false,
       dialogStatus: "",
@@ -499,7 +471,7 @@ export default {
       },
       dialogPvVisible: false,
       rules: {
-        name: [
+        merchant_name: [
           {
             required: true,
             message: "merchant name is required",
@@ -518,8 +490,11 @@ export default {
       this.listLoading = true;
       fetchList(this.listQuery).then((response) => {
         this.listLoading = false;
-        this.list = response.data.items;
-        this.total = response.data.total;
+        //this.list = response.data.items;
+        //this.total = response.data.total;
+
+        this.list = response.data;
+        this.total = response.data.length;
       });
     },
     handleFilter() {
@@ -553,11 +528,11 @@ export default {
     },
     handleQrClick(row) {
       console.log("click on qr", row);
-      this.currentQrData = `${row.qr_pay}`;
+      this.currentQrData = `${row.qr_code}`;
       this.qrDialogVisible = true;
     },
     handleView(row) {
-      this.$router.push(`/ott/merchant/detail/${row.id}`);
+      this.$router.push(`/ott/merchant/detail/${row.merchant_id}`);
     },
     handleCreate() {
       this.resetTemp();
@@ -570,10 +545,14 @@ export default {
     createData() {
       this.$refs["dataForm"].validate((valid) => {
         if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024; // mock a id
-          this.temp.author = "vue-element-admin";
+          // convert date
+          this.temp.business_license_exp_date = parseTime(
+            this.temp.business_license_exp_date,
+            "{d}/{m}/{y}"
+          );
+          console.log("date:", this.temp.business_license_exp_date);
           createMerchant(this.temp).then(() => {
-            this.list.unshift(this.temp);
+            this.getList();
             this.dialogFormVisible = false;
             this.$notify({
               title: "Success",
