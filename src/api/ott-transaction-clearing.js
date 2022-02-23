@@ -20,7 +20,8 @@ export function fetchList(query) {
 
 export function fetchDetail(query) {
   return request({
-    url: '/ott/transaction/clearing/detail',
+    // url: '/ott/transaction/clearing/detail',
+    url: 'https://club-service.codegene.xyz/admin/transactionDetail',
     method: 'get',
     params: query
   })

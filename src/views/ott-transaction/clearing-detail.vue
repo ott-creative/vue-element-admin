@@ -22,20 +22,20 @@
         <template slot="label">
           <i class="el-icon-tickets"></i> Clearing Fee for Club
         </template>
-        ${{ detail.clearing_amount }}
+        ${{ detail.receivable_amount }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i> Clearing Fee for Merchant
         </template>
-        ${{ detail.merchant_clearing_fee }}
+        ${{ detail.clearing_amt }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i>
           Platform Service Fee
         </template>
-        ${{ detail.platform_service_fee }}
+        ${{ detail.service_fee }}
       </el-descriptions-item>
     </el-descriptions>
     <br />
@@ -49,37 +49,31 @@
         <template slot="label">
           <i class="el-icon-date"></i> Clearing Starting Time
         </template>
-        {{ detail.clearing_start_time | parseTime("{y}-{m}-{d} {h}:{i}") }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-date"></i> Clearing End Time
-        </template>
-        {{ detail.clearing_end_time | parseTime("{y}-{m}-{d} {h}:{i}") }}
+        {{ detail.for_phoenix_club.clearing_time }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i> Clearing Receiver ID
         </template>
-        {{ detail.clearing_club_receiver_id }}
+        {{ detail.for_phoenix_club.clearing_reciever_id }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i> Clearing Receiver Name
         </template>
-        {{ detail.clearing_club_receiver_name }}
+        {{ detail.for_phoenix_club.clearing_reciever_name }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i> Clearing Fee
         </template>
-        ${{ detail.receivable_amount }}
+        ${{ detail.for_phoenix_club.clearing_fee }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i> Clearing Result
         </template>
-        <el-tag>{{ detail.clearing_status }}</el-tag>
+        <el-tag>{{ detail.for_phoenix_club.clearing_result }}</el-tag>
       </el-descriptions-item>
     </el-descriptions>
     <br />
@@ -93,37 +87,31 @@
         <template slot="label">
           <i class="el-icon-date"></i> Clearing Starting Time
         </template>
-        {{ detail.clearing_start_time | parseTime("{y}-{m}-{d} {h}:{i}") }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-date"></i> Clearing End Time
-        </template>
-        {{ detail.clearing_end_time | parseTime("{y}-{m}-{d} {h}:{i}") }}
+        {{ detail.for_other_par.clearing_time }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i> Clearing Receiver ID
         </template>
-        {{ detail.clearing_merchant_receiver_id }}
+        {{ detail.for_other_par.clearing_reciever_id }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i> Clearing Receiver Name
         </template>
-        {{ detail.clearing_merchant_receiver_name }}
+        {{ detail.for_other_par.clearing_reciever_name }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i> Clearing Fee
         </template>
-        ${{ detail.merchant_clearing_fee }}
+        ${{ detail.for_other_par.clearing_fee }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i> Clearing Result
         </template>
-        <el-tag>{{ detail.clearing_status }}</el-tag>
+        <el-tag>{{ detail.for_other_par.clearing_result }}</el-tag>
       </el-descriptions-item>
     </el-descriptions>
     <br />
@@ -137,37 +125,31 @@
         <template slot="label">
           <i class="el-icon-date"></i> Clearing Starting Time
         </template>
-        {{ detail.clearing_start_time | parseTime("{y}-{m}-{d} {h}:{i}") }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-date"></i> Clearing End Time
-        </template>
-        {{ detail.clearing_end_time | parseTime("{y}-{m}-{d} {h}:{i}") }}
+        {{ detail.for_platform.clearing_time }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i> Clearing Receiver ID
         </template>
-        {{ detail.clearing_platform_receiver_id }}
+        {{ detail.for_platform.clearing_reciever_id }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i> Clearing Receiver Name
         </template>
-        {{ detail.clearing_platform_receiver_name }}
+        {{ detail.for_platform.clearing_reciever_name }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i> Clearing Fee
         </template>
-        ${{ detail.platform_service_fee }}
+        ${{ detail.for_platform.clearing_fee }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i> Clearing Result
         </template>
-        <el-tag>{{ detail.clearing_status }}</el-tag>
+        <el-tag>{{ detail.for_platform.clearing_result }}</el-tag>
       </el-descriptions-item>
     </el-descriptions>
     <br />
@@ -192,7 +174,7 @@ export default {
     getDetail() {
       let params = this.$route.params;
       this.loading = true;
-      fetchDetail({ id: params.id }).then((response) => {
+      fetchDetail({ order_sn: params.id }).then((response) => {
         if (response.data) {
           this.loading = false;
           this.detail = response.data;
