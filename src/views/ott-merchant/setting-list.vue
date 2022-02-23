@@ -59,8 +59,8 @@
         class="filter-item"
         type="primary"
         icon="el-icon-download"
-        @click="handleDownload"
         disabled="disabled"
+        @click="handleDownload"
       >
         Export
       </el-button>
@@ -85,17 +85,17 @@
         :class-name="getSortClass('merchant_id')"
       >
         <template slot-scope="{ row }">
-          <span>{{ row.merchant_id }}</span>
+          <span>{{ row.sub_merchant_id }}</span>
         </template>
       </el-table-column>
       <el-table-column label="Merchant Name" align="center">
         <template slot-scope="{ row }">
-          {{ row.merchant_name }}
+          {{ row.sub_merchant_name }}
         </template>
       </el-table-column>
       <el-table-column label="Merchant Type" align="center">
         <template slot-scope="{ row }">
-          {{ row.merchant_type }}
+          {{ row.sub_merchant_type }}
         </template>
       </el-table-column>
       <el-table-column label="Clearing Rule" align="center">
@@ -110,12 +110,12 @@
       </el-table-column>
       <el-table-column label="Minimum Settlement Amount" align="center">
         <template slot-scope="{ row }">
-          <span>${{ row.minimum_settlement_amount }}</span>
+          <span>${{ row.min_set_amount }}</span>
         </template>
       </el-table-column>
       <el-table-column label="Settlement Period" align="center">
         <template slot-scope="{ row }">
-          {{ row.settlement_period }}
+          {{ row.set_period }}
         </template>
       </el-table-column>
       <el-table-column
@@ -227,38 +227,38 @@
 </template>
 
 <script>
-import { fetchList as fetchMerchantList } from "@/api/ott-merchant-merchant";
+import { fetchList as fetchMerchantList } from '@/api/ott-merchant-merchant'
 import {
   fetchList,
   createMerchantSetting,
-  updateMerchantSetting,
-} from "@/api/ott-merchant-setting";
-import waves from "@/directive/waves"; // waves directive
-import { parseTime } from "@/utils";
-import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
+  updateMerchantSetting
+} from '@/api/ott-merchant-setting'
+import waves from '@/directive/waves' // waves directive
+import { parseTime } from '@/utils'
+import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 export default {
-  name: "OttMerchantSettingList",
+  name: 'OttMerchantSettingList',
   components: { Pagination },
   directives: { waves },
   filters: {
     filterClearingValue(row) {
-      return row.clearing_rule == "Fixed Amount"
-        ? `\$${row.clearing_value}`
-        : `${row.clearing_value}%`;
-    },
+      return row.clearing_rule == 'Fixed Amount'
+        ? `\$${row.clearing_fee}`
+        : `${row.clearing_percentage}%`
+    }
   },
   data() {
     return {
       tableKey: 0,
       merchantTypeList: [
-        "Individual",
-        "Corporate",
-        "Construction Owner",
-        "Private Sector",
+        'Individual',
+        'Corporate',
+        'Construction Owner',
+        'Private Sector'
       ],
       merchantList: [],
-      clearingRules: ["Fixed Amount", "Fixed Percentage"],
+      clearingRules: ['Fixed Amount', 'Fixed Percentage'],
       settlementAmountList: [100, 200, 500, 1000],
       settlementPeriod: [0, 1, 7],
       list: null,
@@ -267,175 +267,176 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
-        merchant_name: undefined,
+        merchant_id: '8880001',
         merchant_type: undefined,
-        sort: "+merchant_id",
+        sort: '8880001'
       },
       sortOptions: [
-        { label: "ID Ascending", key: "+id" },
-        { label: "ID Descending", key: "-id" },
+        { label: '8880001', key: '+id' },
+        { label: '8880002', key: '-id' }
       ],
-      statusOptions: ["No", "Yes"],
+      statusOptions: ['No', 'Yes'],
       temp: {
-        merchant_name: "",
-        clearing_rule: "Fixed Amount",
+        merchant_name: '',
+        clearing_rule: 'Fixed Amount',
         clearing_value: 10,
         minimum_settlement_amount: 100,
-        settlement_period: 0,
+        settlement_period: 0
       },
       dialogFormVisible: false,
-      dialogStatus: "",
+      dialogStatus: '',
       textMap: {
-        update: "Edit",
-        create: "Create",
+        update: 'Edit',
+        create: 'Create'
       },
       rules: {},
-      downloadLoading: false,
-    };
+      downloadLoading: false
+    }
   },
   created() {
-    this.getList();
-    this.getMerchantList();
+    this.getList()
+    this.getMerchantList()
   },
   methods: {
     getList() {
-      this.listLoading = true;
+      this.listLoading = true
       fetchList(this.listQuery).then((response) => {
-        this.listLoading = false;
-        this.list = response.data.items;
-        this.total = response.data.total;
-      });
+        this.listLoading = false
+        this.list = response.data
+        console.log('返回数据', response.data)
+        this.total = response.data.length
+      })
     },
     getMerchantList() {
-      this.listLoading = true;
+      this.listLoading = true
       fetchMerchantList().then((response) => {
-        this.listLoading = false;
-        this.merchantList = response.data.items;
-      });
+        this.listLoading = false
+        this.merchantList = response.data
+      })
     },
     handleFilter() {
-      this.listQuery.page = 1;
-      this.getList();
+      this.listQuery.page = 1
+      this.getList()
     },
     handleModifyStatus(row, status) {
       this.$message({
-        message: "Operation Success",
-        type: "success",
-      });
-      row.status = status;
+        message: 'Operation Success',
+        type: 'success'
+      })
+      row.status = status
     },
     sortChange(data) {
-      const { prop, order } = data;
-      if (prop === "merchant_id") {
-        this.sortByID(order);
+      const { prop, order } = data
+      if (prop === 'merchant_id') {
+        this.sortByID(order)
       }
     },
     sortByID(order) {
-      if (order === "ascending") {
-        this.listQuery.sort = "+merchant_id";
+      if (order === 'ascending') {
+        this.listQuery.sort = '+merchant_id'
       } else {
-        this.listQuery.sort = "-merchant_id";
+        this.listQuery.sort = '-merchant_id'
       }
-      this.handleFilter();
+      this.handleFilter()
     },
     resetTemp() {
       this.temp = {
-        merchant_name: "",
-        clearing_rule: "Fixed Amount",
+        merchant_name: '',
+        clearing_rule: 'Fixed Amount',
         clearing_value: 10,
         minimum_settlement_amount: 100,
-        settlement_period: 0,
-      };
+        settlement_period: 0
+      }
     },
     handleView(row) {},
     handleCreate() {
-      this.resetTemp();
-      this.dialogStatus = "create";
-      this.dialogFormVisible = true;
+      this.resetTemp()
+      this.dialogStatus = 'create'
+      this.dialogFormVisible = true
       this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
-      });
+        this.$refs['dataForm'].clearValidate()
+      })
     },
     createData() {
-      this.$refs["dataForm"].validate((valid) => {
+      this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.merchant_id = parseInt(Math.random() * 100) + 1024; // mock a id
+          this.temp.merchant_id = parseInt(Math.random() * 100) + 1024 // mock a id
           createMerchantSetting(this.temp).then(() => {
-            this.list.unshift(this.temp);
-            this.dialogFormVisible = false;
+            this.list.unshift(this.temp)
+            this.dialogFormVisible = false
             this.$notify({
-              title: "Success",
-              message: "Created Successfully",
-              type: "success",
-              duration: 2000,
-            });
-          });
+              title: 'Success',
+              message: 'Created Successfully',
+              type: 'success',
+              duration: 2000
+            })
+          })
         }
-      });
+      })
     },
     handleUpdate(row) {
-      this.temp = Object.assign({}, row); // copy obj
-      this.dialogStatus = "update";
-      this.dialogFormVisible = true;
+      this.temp = Object.assign({}, row) // copy obj
+      this.dialogStatus = 'update'
+      this.dialogFormVisible = true
       this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
-      });
+        this.$refs['dataForm'].clearValidate()
+      })
     },
     updateData() {
-      this.$refs["dataForm"].validate((valid) => {
+      this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          const tempData = Object.assign({}, this.temp);
+          const tempData = Object.assign({}, this.temp)
           updateMerchantSetting(tempData).then(() => {
-            const index = this.list.findIndex((v) => v.id === this.temp.id);
-            this.list.splice(index, 1, this.temp);
-            this.dialogFormVisible = false;
+            const index = this.list.findIndex((v) => v.id === this.temp.id)
+            this.list.splice(index, 1, this.temp)
+            this.dialogFormVisible = false
             this.$notify({
-              title: "Success",
-              message: "Update Successfully",
-              type: "success",
-              duration: 2000,
-            });
-          });
+              title: 'Success',
+              message: 'Update Successfully',
+              type: 'success',
+              duration: 2000
+            })
+          })
         }
-      });
+      })
     },
     handleDownload() {
-      this.downloadLoading = true;
-      import("@/vendor/Export2Excel").then((excel) => {
-        const tHeader = ["timestamp", "title", "type", "importance", "status"];
+      this.downloadLoading = true
+      import('@/vendor/Export2Excel').then((excel) => {
+        const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
         const filterVal = [
-          "timestamp",
-          "title",
-          "type",
-          "importance",
-          "status",
-        ];
-        const data = this.formatJson(filterVal);
+          'timestamp',
+          'title',
+          'type',
+          'importance',
+          'status'
+        ]
+        const data = this.formatJson(filterVal)
         excel.export_json_to_excel({
           header: tHeader,
           data,
-          filename: "table-list",
-        });
-        this.downloadLoading = false;
-      });
+          filename: 'table-list'
+        })
+        this.downloadLoading = false
+      })
     },
     formatJson(filterVal) {
       return this.list.map((v) =>
         filterVal.map((j) => {
-          if (j === "timestamp") {
-            return parseTime(v[j]);
+          if (j === 'timestamp') {
+            return parseTime(v[j])
           } else {
-            return v[j];
+            return v[j]
           }
         })
-      );
+      )
     },
-    getSortClass: function (key) {
-      const sort = this.listQuery.sort;
-      return sort === `+${key}` ? "ascending" : "descending";
-    },
-  },
-};
+    getSortClass: function(key) {
+      const sort = this.listQuery.sort
+      return sort === `+${key}` ? 'ascending' : 'descending'
+    }
+  }
+}
 </script>
 
 <style scoped>

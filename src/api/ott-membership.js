@@ -2,7 +2,8 @@ import request from '@/utils/request'
 
 export function fetchList(query) {
   return request({
-    url: '/ott/membership/list',
+    // url: '/ott/membership/list',
+    url: 'https://club-service.codegene.xyz/admin/membership',
     method: 'get',
     params: query
   })
