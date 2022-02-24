@@ -36,6 +36,7 @@
         />
       </el-select>
       <el-button
+        disabled
         v-waves
         class="filter-item"
         type="primary"
@@ -127,6 +128,9 @@
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             Edit
           </el-button>
+          <el-button type="danger" size="mini" @click="handleDelete(row)">
+            Delete
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -152,15 +156,21 @@
         <el-divider direction="horizontal" content-position="center" />
         <el-form-item label="Merchant Name">
           <el-select
-            v-model="merchantList"
+            :disabled="dialogStatus == 'create' ? false : true"
+            v-model="temp.merchant_info"
             class="filter-item"
-            placeholder="Please select"
+            :placeholder="
+              dialogStatus == 'create'
+                ? 'Please select'
+                : temp.merchant_info.merchant_name
+            "
+            value-key="merchant_id"
           >
             <el-option
               v-for="item in merchantList"
               :key="item.merchant_id"
               :label="item.merchant_name"
-              :value="item.merchant_name"
+              :value="item"
             />
           </el-select>
         </el-form-item>
@@ -205,7 +215,7 @@
             placeholder="Please select"
           >
             <el-option
-              v-for="item in settlementAmountList"
+              v-for="item in settlementPeriod"
               :key="item"
               :label="item"
               :value="item"
@@ -227,216 +237,275 @@
 </template>
 
 <script>
-import { fetchList as fetchMerchantList } from '@/api/ott-merchant-merchant'
+import { fetchList as fetchMerchantList } from "@/api/ott-merchant-merchant";
 import {
   fetchList,
   createMerchantSetting,
-  updateMerchantSetting
-} from '@/api/ott-merchant-setting'
-import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+  updateMerchantSetting,
+  deleteMerchantSetting,
+} from "@/api/ott-merchant-setting";
+import waves from "@/directive/waves"; // waves directive
+import { parseTime } from "@/utils";
+import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
+
+const MAIN_MERCHANT_ID = "8880001";
 
 export default {
-  name: 'OttMerchantSettingList',
+  name: "OttMerchantSettingList",
   components: { Pagination },
   directives: { waves },
   filters: {
     filterClearingValue(row) {
-      return row.clearing_rule == 'Fixed Amount'
+      return row.clearing_rule == "Fixed Amount"
         ? `\$${row.clearing_fee}`
-        : `${row.clearing_percentage}%`
-    }
+        : `${row.clearing_percentage * 100}%`;
+    },
   },
   data() {
     return {
       tableKey: 0,
       merchantTypeList: [
-        'Individual',
-        'Corporate',
-        'Construction Owner',
-        'Private Sector'
+        "Individual",
+        "Corporate",
+        "Construction Owner",
+        "Private Sector",
       ],
-      merchantList: [],
-      clearingRules: ['Fixed Amount', 'Fixed Percentage'],
+      merchantList: null,
+      clearingRules: ["Fixed Amount", "Fixed Percentage"],
       settlementAmountList: [100, 200, 500, 1000],
-      settlementPeriod: [0, 1, 7],
+      settlementPeriod: [1, 3, 5],
       list: null,
       total: 0,
       listLoading: true,
       listQuery: {
         page: 1,
         limit: 20,
-        merchant_id: '8880001',
+        merchant_id: "8880001",
         merchant_type: undefined,
-        sort: '8880001'
+        sort: "8880001",
       },
       sortOptions: [
-        { label: '8880001', key: '+id' },
-        { label: '8880002', key: '-id' }
+        { label: "8880001", key: "+id" },
+        { label: "8880002", key: "-id" },
       ],
-      statusOptions: ['No', 'Yes'],
+      statusOptions: ["No", "Yes"],
       temp: {
-        merchant_name: '',
-        clearing_rule: 'Fixed Amount',
+        main_merchant_id: MAIN_MERCHANT_ID,
+        merchant_info: {},
+        clearing_rule: "Fixed Amount",
         clearing_value: 10,
         minimum_settlement_amount: 100,
-        settlement_period: 0
+        settlement_period: 0,
       },
       dialogFormVisible: false,
-      dialogStatus: '',
+      dialogStatus: "",
       textMap: {
-        update: 'Edit',
-        create: 'Create'
+        update: "Edit",
+        create: "Create",
       },
       rules: {},
-      downloadLoading: false
-    }
+      downloadLoading: false,
+    };
   },
   created() {
-    this.getList()
-    this.getMerchantList()
+    this.getList();
   },
   methods: {
     getList() {
-      this.listLoading = true
-      fetchList(this.listQuery).then((response) => {
-        this.listLoading = false
-        this.list = response.data
-        console.log('返回数据', response.data)
-        this.total = response.data.length
-      })
-    },
-    getMerchantList() {
-      this.listLoading = true
-      fetchMerchantList().then((response) => {
-        this.listLoading = false
-        this.merchantList = response.data
-      })
+      this.listLoading = true;
+
+      Promise.all([fetchList(this.listQuery), fetchMerchantList()]).then(
+        (results) => {
+          this.listLoading = false;
+          this.list = results[0].data;
+          this.total = results[0].data.length;
+
+          // filter out merchant which already in list
+          let settingKeyMap = {};
+          for (var i = 0; i < this.list.length; i++) {
+            settingKeyMap[this.list[i].sub_merchant_id] = 1;
+          }
+          console.log(
+            "settingKeyMap",
+            settingKeyMap,
+            results[1].data,
+            results[0].data
+          );
+          this.merchantList = results[1].data.filter(
+            (item) =>
+              item.merchant_id != MAIN_MERCHANT_ID &&
+              settingKeyMap[item.merchant_id] != 1
+          );
+        }
+      );
     },
     handleFilter() {
-      this.listQuery.page = 1
-      this.getList()
+      this.listQuery.page = 1;
+      this.getList();
     },
     handleModifyStatus(row, status) {
       this.$message({
-        message: 'Operation Success',
-        type: 'success'
-      })
-      row.status = status
+        message: "Operation Success",
+        type: "success",
+      });
+      row.status = status;
     },
     sortChange(data) {
-      const { prop, order } = data
-      if (prop === 'merchant_id') {
-        this.sortByID(order)
+      const { prop, order } = data;
+      if (prop === "merchant_id") {
+        this.sortByID(order);
       }
     },
     sortByID(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = '+merchant_id'
+      if (order === "ascending") {
+        this.listQuery.sort = "+merchant_id";
       } else {
-        this.listQuery.sort = '-merchant_id'
+        this.listQuery.sort = "-merchant_id";
       }
-      this.handleFilter()
+      this.handleFilter();
     },
     resetTemp() {
       this.temp = {
-        merchant_name: '',
-        clearing_rule: 'Fixed Amount',
+        main_merchant_id: MAIN_MERCHANT_ID,
+        merchant_info: {},
+        clearing_rule: "Fixed Amount",
         clearing_value: 10,
         minimum_settlement_amount: 100,
-        settlement_period: 0
-      }
+        settlement_period: 1,
+      };
     },
     handleView(row) {},
     handleCreate() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
+      this.resetTemp();
+      this.dialogStatus = "create";
+      this.dialogFormVisible = true;
       this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
+        this.$refs["dataForm"].clearValidate();
+      });
     },
     createData() {
-      this.$refs['dataForm'].validate((valid) => {
+      this.$refs["dataForm"].validate((valid) => {
         if (valid) {
-          this.temp.merchant_id = parseInt(Math.random() * 100) + 1024 // mock a id
+          console.log("create merchant setting:", this.temp);
           createMerchantSetting(this.temp).then(() => {
-            this.list.unshift(this.temp)
-            this.dialogFormVisible = false
+            this.getList();
+            this.dialogFormVisible = false;
             this.$notify({
-              title: 'Success',
-              message: 'Created Successfully',
-              type: 'success',
-              duration: 2000
-            })
-          })
+              title: "Success",
+              message: "Created Successfully",
+              type: "success",
+              duration: 2000,
+            });
+          });
         }
-      })
+      });
     },
     handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
+      //this.temp = Object.assign({}, row); // copy Object
+      // convert row data into temp
+      this.temp = {
+        main_merchant_id: MAIN_MERCHANT_ID,
+        merchant_info: {
+          merchant_id: row.sub_merchant_id,
+          merchant_name: row.sub_merchant_name,
+          merchant_type: row.sub_merchant_type,
+        },
+        clearing_rule: row.clearing_rule,
+        clearing_value:
+          row.clearing_rule == "Fixed Amount"
+            ? row.clearing_fee
+            : row.clearing_percentage,
+        minimum_settlement_amount: row.min_set_amount,
+        settlement_period: row.set_period.substring(2),
+      };
+      this.dialogStatus = "update";
+      this.dialogFormVisible = true;
       this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
+        this.$refs["dataForm"].clearValidate();
+      });
     },
     updateData() {
-      this.$refs['dataForm'].validate((valid) => {
+      this.$refs["dataForm"].validate((valid) => {
         if (valid) {
-          const tempData = Object.assign({}, this.temp)
+          const tempData = Object.assign({}, this.temp);
+          console.log("update temp:", tempData);
           updateMerchantSetting(tempData).then(() => {
-            const index = this.list.findIndex((v) => v.id === this.temp.id)
-            this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
+            this.getList();
+            this.dialogFormVisible = false;
             this.$notify({
-              title: 'Success',
-              message: 'Update Successfully',
-              type: 'success',
-              duration: 2000
-            })
-          })
+              title: "Success",
+              message: "Update Successfully",
+              type: "success",
+              duration: 2000,
+            });
+          });
         }
+      });
+    },
+    handleDelete(row) {
+      // Pop up confirm
+      this.$confirm("Sure to delete this setting?", "Confirm", {
+        distinguishCancelAndClose: true,
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel",
       })
+        .then(() => {
+          console.log("confirm delete");
+          deleteMerchantSetting({
+            main_merchant_id: MAIN_MERCHANT_ID,
+            sub_merchant_id: row.sub_merchant_id,
+          }).then(() => {
+            this.getList();
+            this.$notify({
+              title: "Success",
+              message: "Delete Successfully",
+              type: "success",
+              duration: 2000,
+            });
+          });
+        })
+        .catch((action) => {
+          console.log("action:", action);
+          // do nothing
+        });
     },
     handleDownload() {
-      this.downloadLoading = true
-      import('@/vendor/Export2Excel').then((excel) => {
-        const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
+      this.downloadLoading = true;
+      import("@/vendor/Export2Excel").then((excel) => {
+        const tHeader = ["timestamp", "title", "type", "importance", "status"];
         const filterVal = [
-          'timestamp',
-          'title',
-          'type',
-          'importance',
-          'status'
-        ]
-        const data = this.formatJson(filterVal)
+          "timestamp",
+          "title",
+          "type",
+          "importance",
+          "status",
+        ];
+        const data = this.formatJson(filterVal);
         excel.export_json_to_excel({
           header: tHeader,
           data,
-          filename: 'table-list'
-        })
-        this.downloadLoading = false
-      })
+          filename: "table-list",
+        });
+        this.downloadLoading = false;
+      });
     },
     formatJson(filterVal) {
       return this.list.map((v) =>
         filterVal.map((j) => {
-          if (j === 'timestamp') {
-            return parseTime(v[j])
+          if (j === "timestamp") {
+            return parseTime(v[j]);
           } else {
-            return v[j]
+            return v[j];
           }
         })
-      )
+      );
     },
-    getSortClass: function(key) {
-      const sort = this.listQuery.sort
-      return sort === `+${key}` ? 'ascending' : 'descending'
-    }
-  }
-}
+    getSortClass: function (key) {
+      const sort = this.listQuery.sort;
+      return sort === `+${key}` ? "ascending" : "descending";
+    },
+  },
+};
 </script>
 
 <style scoped>
