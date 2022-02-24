@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-editor-container">
-    <!-- <panel-group @handleSetLineChartData="handleSetLineChartData" /> -->
+    <panel-group @handleSetLineChartData="handleSetLineChartData" />
 
     <el-row style="background: #fff; padding: 16px 16px 0; margin-bottom: 32px">
       <line-chart :chart-data="lineChartData" />
@@ -9,7 +9,7 @@
     <el-row :gutter="32">
       <el-col :xs="12" :sm="12" :lg="12">
         <div class="chart-wrapper">
-          <pie-chart />
+          <pie-chart :chart-data="pieChartData"/>
         </div>
       </el-col>
       <el-col :xs="12" :sm="12" :lg="12">
@@ -45,6 +45,10 @@
       </el-col>
       
     </el-row>
+      <el-row style="background: #fff; padding: 16px 16px 0; margin-bottom: 32px">
+      <line-chart :chart-data="lineChartData" />
+    </el-row>
+    
   </div>
 </template>
 
@@ -61,6 +65,7 @@ import BoxCard from './components/BoxCard'
 import PieChart2 from './components/PieChart2'
 import BarChart3 from './components/BarChart3'
 import BarChart4 from './components/BarChart4'
+import { fetchList } from '@/api/ott-dashboard'
 
 const lineChartData = {
   members: {
@@ -99,10 +104,26 @@ export default {
   },
   data() {
     return {
-      lineChartData: lineChartData.members
+      lineChartData: null,
+      pieChartData: null
     }
   },
+  created() {
+    this.getList()
+  },
   methods: {
+    getList() {
+      console.log('被调用')
+      fetchList().then((response) => {
+        this.lineChartData = response.data.consumption_data,
+        this.pieChartData = response.data
+
+        // Just to simulate the time of the request
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
+      })
+    },
     handleSetLineChartData(type) {
       this.lineChartData = lineChartData[type]
       console.log('linechart data:', this.lineChartData, type)

@@ -21,12 +21,24 @@ export default {
     height: {
       type: String,
       default: '300px'
-    }
+    },
+     chartData: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {
       chart: null
     }
+  },
+  watch: {
+    chartData: {
+      deep: true,
+      handler(val) {
+        this.setOptions(val);
+      },
+    },
   },
   mounted() {
     this.$nextTick(() => {
@@ -42,9 +54,13 @@ export default {
   },
   methods: {
     initChart() {
-      this.chart = echarts.init(this.$el, 'macarons')
-
-      this.chart.setOption({
+      this.chart = echarts.init(this.$el, 'macarons');
+      console.log('this.chartData',this.chartData)
+      this.setOptions(this.chartData);
+    },
+    setOptions({ clearing_data } = {}) {
+      console.log('pieCharData',clearing_data)
+       this.chart.setOption({
         title: {
           text: 'Clearing detail in current month'
         },
@@ -65,11 +81,7 @@ export default {
             roseType: 'radius',
             radius: [15, 95],
             center: ['50%', '38%'],
-            data: [
-              { value: 320, name: 'Receivable Amount' },
-              { value: 240, name: 'Clearing Amount' },
-              { value: 149, name: 'Platform Service Fee' }
-            ],
+            data: clearing_data,
             animationEasing: 'cubicInOut',
             animationDuration: 2600
           }
