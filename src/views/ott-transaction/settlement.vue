@@ -348,7 +348,10 @@ export default {
       this.getList();
     },
     handleDetail(row) {
-      this.$router.push(`/ott/transaction/settlement/detail/${row.id}`);
+      console.log("row:", row);
+      this.$router.push(
+        `/ott/transaction/settlement/detail/${row.settlement_id}`
+      );
     },
     handleModifyStatus(row, status) {
       this.$message({
