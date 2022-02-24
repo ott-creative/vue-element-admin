@@ -55,11 +55,11 @@ export default {
   methods: {
     initChart() {
       this.chart = echarts.init(this.$el, 'macarons');
-      console.log('this.chartData',this.chartData)
+    
       this.setOptions(this.chartData);
     },
     setOptions({ clearing_data } = {}) {
-      console.log('pieCharData',clearing_data)
+    
        this.chart.setOption({
         title: {
           text: 'Clearing detail in current month'
@@ -78,7 +78,7 @@ export default {
           {
             name: 'Clearing detail in current month',
             type: 'pie',
-            roseType: 'radius',
+            // roseType: 'radius',
             radius: [15, 95],
             center: ['50%', '38%'],
             data: clearing_data,

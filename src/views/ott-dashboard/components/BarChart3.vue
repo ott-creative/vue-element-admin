@@ -23,12 +23,24 @@ export default {
     height: {
       type: String,
       default: '125px'
+    },
+    chartData: {
+      type: Object,
+      required: true,
     }
   },
   data() {
     return {
       chart: null
     }
+  },
+  watch: {
+    chartData: {
+      deep: true,
+      handler(val) {
+        this.setOptions(val);
+      },
+    },
   },
   mounted() {
     this.$nextTick(() => {
@@ -45,7 +57,9 @@ export default {
   methods: {
     initChart() {
       this.chart = echarts.init(this.$el, 'macarons')
-
+      this.setOptions(this.chartData);
+    },
+    setOptions({ age25, age2535,age3545,age45 } = {}) {
       this.chart.setOption({
         tooltip: {
           trigger: 'axis',
@@ -74,25 +88,25 @@ export default {
           name: 'Below 25',
           type: 'bar',
            stack: 'total',
-          data: [9],
+          data: [age25],
           animationDuration
         }, {
           name: '25-35',
           type: 'bar',
            stack: 'total',
-          data: [31],
+          data: [age2535],
           animationDuration
         }, {
           name: '35-45',
           type: 'bar',
            stack: 'total',
-          data: [54],
+          data: [age3545],
           animationDuration
         }, {
           name: 'More than 45',
           type: 'bar',
            stack: 'total',
-          data: [6],
+          data: [age45],
           animationDuration
         }]
       })

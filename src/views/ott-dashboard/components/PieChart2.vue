@@ -21,12 +21,24 @@ export default {
     height: {
       type: String,
       default: '300px'
+    },
+    chartData: {
+      type: Object,
+      required: true,
     }
   },
   data() {
     return {
       chart: null
     }
+  },
+  watch: {
+    chartData: {
+      deep: true,
+      handler(val) {
+        this.setOptions(val);
+      },
+    },
   },
   mounted() {
     this.$nextTick(() => {
@@ -43,7 +55,9 @@ export default {
   methods: {
     initChart() {
       this.chart = echarts.init(this.$el, 'macarons')
-
+      this.setOptions(this.chartData);
+    },
+    setOptions({ member_active } = {}) {
       this.chart.setOption({
          title: {
           text: 'Active Member'
@@ -64,10 +78,7 @@ export default {
             roseType: 'radius',
             radius: [15, 95],
             center: ['50%', '38%'],
-            data: [
-              { value: 320, name: 'active' },
-              { value: 240, name: 'inactive' }
-            ],
+            data: member_active,
             animationEasing: 'cubicInOut',
             animationDuration: 2600
           }

@@ -23,12 +23,24 @@ export default {
     height: {
       type: String,
       default: '300px'
+    },
+    chartData: {
+      type: Object,
+      required: true,
     }
   },
   data() {
     return {
       chart: null
     }
+  },
+  watch: {
+    chartData: {
+      deep: true,
+      handler(val) {
+        this.setOptions(val);
+      },
+    },
   },
   mounted() {
     this.$nextTick(() => {
@@ -45,7 +57,9 @@ export default {
   methods: {
     initChart() {
       this.chart = echarts.init(this.$el, 'macarons')
-
+      this.setOptions(this.chartData);
+    },
+    setOptions({ expectedData, actualData } = {}) {
       this.chart.setOption({
         title: {
           text: 'Member Top Up Amount'
@@ -95,14 +109,14 @@ export default {
           type: 'bar',
           // stack: 'vistors',
           // barWidth: '60%',
-          data: [790, 520, 200, 334, 390, 330, 220,790, 520, 200, 334, 390],
+          data: expectedData,
           animationDuration
         }, {
           name: '2022',
           type: 'bar',
           // stack: 'vistors',
           // barWidth: '60%',
-          data: [790, 520, 200, 334, 390, 330, 220,790, 520, 200, 334, 390],
+          data: actualData,
           animationDuration
         }]
       })

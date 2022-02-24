@@ -23,12 +23,24 @@ export default {
     height: {
       type: String,
       default: '125px'
+    },
+    chartData: {
+      type: Object,
+      required: true,
     }
   },
   data() {
     return {
       chart: null
     }
+  },
+  watch: {
+    chartData: {
+      deep: true,
+      handler(val) {
+        this.setOptions(val);
+      },
+    },
   },
   mounted() {
     this.$nextTick(() => {
@@ -45,7 +57,9 @@ export default {
   methods: {
     initChart() {
       this.chart = echarts.init(this.$el, 'macarons')
-
+      this.setOptions(this.chartData);
+    },
+    setOptions({ Female, Male } = {}) {
       this.chart.setOption({
         tooltip: {
           trigger: 'axis',
@@ -75,14 +89,14 @@ export default {
           type: 'bar',
            stack: 'total',
           // barWidth: '60%',
-          data: [79],
+          data: [Male],
           animationDuration
         }, {
           name: 'Female',
           type: 'bar',
            stack: 'total',
           // barWidth: '60%',
-          data: [90],
+          data: [Female],
           animationDuration
         }]
       })
