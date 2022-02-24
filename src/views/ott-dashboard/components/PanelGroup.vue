@@ -1,6 +1,6 @@
 <template>
   <el-row :gutter="40" class="panel-group">
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+    <!-- <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel" >
         <div class="card-panel-icon-wrapper icon-people">
           <svg-icon icon-class="peoples" class-name="card-panel-icon" />
@@ -15,11 +15,11 @@
           />
         </div>
       </div>
-    </el-col>
+    </el-col> -->
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel" >
-        <div class="card-panel-icon-wrapper icon-people">
-          <svg-icon icon-class="message" class-name="card-panel-icon" />
+        <div class="card-panel-icon-wrapper icon-money">
+          <svg-icon icon-class="transaction" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">Transaction</div>
@@ -36,7 +36,7 @@
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel">
         <div class="card-panel-icon-wrapper icon-money">
-          <svg-icon icon-class="message" class-name="card-panel-icon" />
+          <svg-icon icon-class="feiyongjiesuandan" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">Clearing</div>
@@ -53,13 +53,30 @@
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel">
         <div class="card-panel-icon-wrapper icon-money">
-          <svg-icon icon-class="message" class-name="card-panel-icon" />
+          <svg-icon icon-class="shoukuan" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">Receivable</div>
           <count-to
             :start-val="0"
             :end-val="chartData.rece_amt"
+            :duration="1600"
+            :decimals=2
+            class="card-panel-num"
+          />
+        </div>
+      </div>
+    </el-col>
+    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+      <div class="card-panel">
+        <div class="card-panel-icon-wrapper icon-money">
+          <svg-icon icon-class="yunweijiaobenpingtai" class-name="card-panel-icon" />
+        </div>
+        <div class="card-panel-description">
+          <div class="card-panel-text">Service Fee</div>
+          <count-to
+            :start-val="0"
+            :end-val="chartData.service_fee"
             :duration="1600"
             :decimals=2
             class="card-panel-num"
