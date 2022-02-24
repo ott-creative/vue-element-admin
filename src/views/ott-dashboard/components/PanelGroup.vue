@@ -50,16 +50,16 @@
         </div>
       </div>
     </el-col>
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel">
         <div class="card-panel-icon-wrapper icon-money">
-          <svg-icon icon-class="shoukuan" class-name="card-panel-icon" />
+          <svg-icon icon-class="yunweijiaobenpingtai" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
-          <div class="card-panel-text">Receivable</div>
+          <div class="card-panel-text">Service Fee</div>
           <count-to
             :start-val="0"
-            :end-val="chartData.rece_amt"
+            :end-val="chartData.service_fee"
             :duration="1600"
             :decimals=2
             class="card-panel-num"
@@ -70,13 +70,13 @@
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel">
         <div class="card-panel-icon-wrapper icon-money">
-          <svg-icon icon-class="yunweijiaobenpingtai" class-name="card-panel-icon" />
+          <svg-icon icon-class="shoukuan" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
-          <div class="card-panel-text">Service Fee</div>
+          <div class="card-panel-text">Receivable</div>
           <count-to
             :start-val="0"
-            :end-val="chartData.service_fee"
+            :end-val="chartData.rece_amt"
             :duration="1600"
             :decimals=2
             class="card-panel-num"
