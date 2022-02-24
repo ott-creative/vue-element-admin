@@ -19,7 +19,7 @@
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel" >
         <div class="card-panel-icon-wrapper icon-money">
-          <svg-icon icon-class="transaction" class-name="card-panel-icon" />
+          <svg-icon icon-class="line-transaction" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">Transaction</div>
@@ -70,7 +70,7 @@
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel">
         <div class="card-panel-icon-wrapper icon-money">
-          <svg-icon icon-class="shoukuan" class-name="card-panel-icon" />
+          <svg-icon icon-class="shoukuandan" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">Receivable</div>
