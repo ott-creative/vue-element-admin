@@ -1,10 +1,16 @@
 import request from '@/utils/request'
 
 export function login(data) {
-  return request({
+  /*return request({
     url: '/vue-element-admin/user/login',
     method: 'post',
     data
+  })*/
+
+  return request({
+    url: 'https://club-service.codegene.xyz/admin/merchantLogin',
+    method: 'get',
+    params: data
   })
 }
 
