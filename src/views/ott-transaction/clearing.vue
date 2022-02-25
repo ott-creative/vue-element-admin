@@ -23,35 +23,32 @@
             <div class="summary_title">&nbsp;</div>
             <div class="summary_content">-</div>
           </el-col>
-          <el-col
-            :span="4"
-            class="text-center"
-          ><div class="summary_title">Total Clearing Fee</div>
+          <el-col :span="4" class="text-center"
+            ><div class="summary_title">Total Clearing Fee</div>
             <div class="summary_content">
               ${{ clearing_summary.total_clear_fee }}
-            </div></el-col>
+            </div></el-col
+          >
           <el-col :span="1" class="text-center">
             <div class="summary_title">&nbsp;</div>
             <div class="summary_content">-</div>
           </el-col>
-          <el-col
-            :span="4"
-            class="text-center"
-          ><div class="summary_title">Total Platform Service Fee</div>
+          <el-col :span="4" class="text-center"
+            ><div class="summary_title">Total Platform Service Fee</div>
             <div class="summary_content">
               ${{ clearing_summary.total_service_fee }}
-            </div></el-col>
+            </div></el-col
+          >
           <el-col :span="1" class="text-center">
             <div class="summary_title">&nbsp;</div>
             <div class="summary_content">=</div>
           </el-col>
-          <el-col
-            :span="4"
-            class="text-center"
-          ><div class="summary_title">Total Receivable Amount</div>
+          <el-col :span="4" class="text-center"
+            ><div class="summary_title">Total Receivable Amount</div>
             <div class="summary_content">
               ${{ clearing_summary.total_rece_amt }}
-            </div></el-col>
+            </div></el-col
+          >
         </div>
       </el-card>
     </el-row>
@@ -148,12 +145,12 @@
 </template>
 
 <script>
-import { fetchSummary, fetchList } from '@/api/ott-transaction-clearing'
-import { parseTime } from '@/utils'
-import Pagination from '@/components/Pagination'
+import { fetchSummary, fetchList } from "@/api/ott-transaction-clearing";
+import { parseTime } from "@/utils";
+import Pagination from "@/components/Pagination";
 
 export default {
-  name: 'OttTransactionClearing',
+  name: "OttTransactionClearing",
   components: { Pagination },
   directives: {},
   data() {
@@ -165,21 +162,21 @@ export default {
         transaction_amount: 0,
         refund_amount: 0,
         clearing_amount: 0,
-        platform_service_amount: 0
+        platform_service_amount: 0,
       },
       list: null,
       total: 0,
       listQuery: {
         page: 1,
         limit: 20,
-        merchant_id: 8880001
-      }
-    }
+        merchant_id: 8880001,
+      },
+    };
   },
 
   created() {
     // this.getClearingSummary();
-    this.getClearingList()
+    this.getClearingList();
   },
   methods: {
     // getClearingSummary() {
@@ -191,8 +188,8 @@ export default {
     // },
 
     getClearingList() {
-      this.listLoading = true
-      this.summaryLoading = true
+      this.listLoading = true;
+      this.summaryLoading = true;
       fetchList(this.listQuery).then((response) => {
         this.listLoading = false
         this.summaryLoading = false
@@ -200,37 +197,38 @@ export default {
         this.clearing_summary = response.data.account
         this.total = response.total
       })
+
     },
 
-    getSortClass: function(key) {
-      const sort = this.listQuery.sort
-      return sort === `+${key}` ? 'ascending' : 'descending'
+    getSortClass: function (key) {
+      const sort = this.listQuery.sort;
+      return sort === `+${key}` ? "ascending" : "descending";
     },
 
     handleFilter() {
-      this.listQuery.page = 1
-      this.getFundList()
+      this.listQuery.page = 1;
+      this.getFundList();
     },
 
     sortChange(data) {
-      const { prop, order } = data
-      if (prop === 'order_id') {
-        this.sortByID(order)
+      const { prop, order } = data;
+      if (prop === "order_id") {
+        this.sortByID(order);
       }
     },
     sortByID(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = '+order_id'
+      if (order === "ascending") {
+        this.listQuery.sort = "+order_id";
       } else {
-        this.listQuery.sort = '-order_id'
+        this.listQuery.sort = "-order_id";
       }
-      this.handleFilter()
+      this.handleFilter();
     },
     handleDetail(row) {
-      this.$router.push(`/ott/transaction/clearing/detail/${row.order_sn}`)
-    }
-  }
-}
+      this.$router.push(`/ott/transaction/clearing/detail/${row.order_sn}`);
+    },
+  },
+};
 </script>
 
 <style scoped>

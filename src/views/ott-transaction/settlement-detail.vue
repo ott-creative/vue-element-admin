@@ -5,11 +5,13 @@
         <div style="margin-bottom: 50px">
           <el-col :span="12" class="text-center">
             <div class="summary_title">Settlement Amount</div>
-            <div class="summary_content">$1234</div>
+            <div class="summary_content">${{ detail.settlement_amt }}</div>
           </el-col>
           <el-col :span="12" class="text-center">
             <div class="summary_title">Settlement Commission</div>
-            <div class="summary_content">$2345</div>
+            <div class="summary_content">
+              ${{ detail.settlement_commission }}
+            </div>
           </el-col>
         </div>
       </el-card>
@@ -25,14 +27,14 @@
         <template slot="label"
           ><i class="el-icon-tickets"></i> Settlement Statement ID
         </template>
-        {{ detail.id }}
+        {{ detail.settlement_id }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-date"></i> Billing Period
         </template>
-        {{ detail.starting_date | parseTime("{y}-{m}-{d}") }} --
-        {{ detail.ending_date | parseTime("{y}-{m}-{d}") }}
+        {{ detail.settlement_start_time | parseTime("{y}-{m}-{d}") }} --
+        {{ detail.settlement_end_time | parseTime("{y}-{m}-{d}") }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
@@ -44,126 +46,126 @@
         <template slot="label">
           <i class="el-icon-tickets"></i> Settlement Status
         </template>
-        <el-tag>{{ detail.order_status }}</el-tag>
+        <el-tag>{{ detail.settlement_status }}</el-tag>
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i>
           Club Name
         </template>
-        {{ detail.club_name }}
+        {{ detail.merchant_name }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i>
           Settlement Bank
         </template>
-        {{ detail.club_name }}
+        {{ detail.bank_name }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i>
           Swift Code
         </template>
-        {{ detail.club_name }}
+        {{ detail.swift_code }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i>
           Branch Number
         </template>
-        {{ detail.club_name }}
+        {{ detail.branch_number }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i>
           Branch Full Address
         </template>
-        {{ detail.club_name }}
+        {{ detail.branch_full_address }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i>
           Account Holder Name
         </template>
-        {{ detail.club_name }}
+        {{ detail.account_holder_name }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i>
           Account Holder Full Address
         </template>
-        {{ detail.club_name }}
+        {{ detail.account_holder_address }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i>
           Bank Account Number
         </template>
-        {{ detail.club_name }}
+        {{ detail.bank_account_number }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i>
           Bank Routing Number
         </template>
-        {{ detail.club_name }}
+        {{ detail.routing_number }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i>
           Transaction Amount
         </template>
-        ${{ detail.settlement_amount }}
+        ${{ detail.transaction_amt }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i>
           Refund Amount
         </template>
-        $0
+        ${{ detail.refund_amt }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i>
           Clearing Fee
         </template>
-        $0
+        ${{ detail.clearing_fee }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i>
           Platform Service Fee
         </template>
-        $0
+        ${{ detail.service_fee }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i>
           Current Balance
         </template>
-        ${{ detail.account_balance }}
+        ${{ detail.current_balance }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i>
           Settlement Commission
         </template>
-        $0
+        ${{ detail.settlement_commission }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i>
           Settlement Amount
         </template>
-        $0
+        ${{ detail.settlement_amt }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template slot="label">
           <i class="el-icon-tickets"></i>
           Clearing Fee
         </template>
-        $0
+        ${{ detail.clearing_fee }}
       </el-descriptions-item>
     </el-descriptions>
     <br />
@@ -188,10 +190,10 @@ export default {
     getDetail() {
       let params = this.$route.params;
       this.loading = true;
-      fetchDetail({ id: params.id }).then((response) => {
+      fetchDetail({ settlement_id: params.id }).then((response) => {
         if (response.data) {
           this.loading = false;
-          this.detail = response.data;
+          this.detail = response.data.detail;
         }
       });
     },

@@ -164,7 +164,11 @@ export default {
     return {
       loading: true,
 
-      detail: {},
+      detail: {
+        for_platform: {},
+        for_other_par: {},
+        for_phoenix_club: {},
+      },
     };
   },
   created() {
@@ -178,6 +182,7 @@ export default {
         if (response.data) {
           this.loading = false;
           this.detail = response.data;
+          console.log("detail:", this.detail);
         }
       });
     },
