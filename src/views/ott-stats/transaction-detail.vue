@@ -317,7 +317,7 @@ export default {
       fetchList(this.listQuery).then((response) => {
         this.listLoading = false
         this.list = response.data
-        this.total = response.data.length
+        this.total = response.total
 
         // Just to simulate the time of the request
         setTimeout(() => {

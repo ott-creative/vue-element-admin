@@ -198,7 +198,7 @@ export default {
         this.summaryLoading = false
         this.list = response.data.data_list
         this.clearing_summary = response.data.account
-        this.total = response.data.length
+        this.total = response.total
       })
     },
 

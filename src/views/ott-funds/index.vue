@@ -127,7 +127,7 @@ export default {
         this.summaryLoading = false
         this.fund_summary = response.data
         this.list = response.data.detail
-        this.total = response.data.length
+        this.total = response.total
       })
     },
 
